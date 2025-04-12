@@ -4,7 +4,7 @@ import os
 DB_PATH = os.path.join("data", "finanzas_parejas.db")
 
 def registrar_usuario(nombre, correo, contraseña): # Creamos la funcion para registrar un usuario
-    try:
+    try: #Forma de decir "intenta hacer algo"
         conexion = sqlite3.connect(DB_PATH)
         cursor = conexion.cursor()
 
