@@ -1,6 +1,7 @@
 #doc para hacer pruebas
 from usuario import registrar_usuario
 from pareja import crear_pareja
+from movimientos import registrar_movimiento_DB
 
 #En esta funcion se encuentra el menu principal
 def menu_principal():
@@ -8,15 +9,18 @@ def menu_principal():
         print("\n=== Menú Principal ===")
         print("1. Registrar usuario")
         print("2. Crear pareja")
-        print("3. Salir")
+        print("3. Registrar movimiento")
+        print("4. Salir")
 
         opcion = input("Selecciona una opción: ")
 
         if opcion == "1":
             menu_registro_usuarios()  # Aquí llamas a la función que hiciste para registrar
         elif opcion == "2":
-            pareja_creacion()  # Esta sería tu función ya creada
+            pareja_creacion()  # Esta sería funcion para crear una pareja
         elif opcion == "3":
+            registrar_movimiento()  # Esta es una funcion creada para registrar un movimiento
+        elif opcion == "4":
             print("👋 Hasta luego")
             break
         else:
@@ -44,7 +48,8 @@ def menu_registro_usuarios():  # Esta función muestra un menú para registrar u
             print("👋 Saliste de la creación de usuarios.")  # Mensaje de despedida
             break  # Finalizamos el ciclo while
 
-def pareja_creacion():
+def pareja_creacion(): #Funcion para crear pareja
+
     # Pregunta inicial para saber si el usuario quiere crear una pareja
     validacion_1 = input("¿Te gustaría crear una pareja? (SI/NO): ").strip().lower()
 
@@ -60,6 +65,20 @@ def pareja_creacion():
 
     else:
         print("❌ El usuario no quiso crear una pareja.")
+
+def registrar_movimiento():
+    print("=== Registro de Movimiento ===")
+
+    pareja_id = input("ID de la pareja: ")
+    fecha = input("Fecha (YYYY-MM-DD): ")
+    categoria = input("Categoría (Ej: Comida, Transporte, etc.): ")
+    monto = float(input("Monto: "))
+    tipo = input("Tipo (ingreso/gasto): ")
+    autor_id = input("ID del autor del movimiento: ")
+    descripcion = input("Descripción del movimiento: ")
+
+    registrar_movimiento_DB(pareja_id, fecha, categoria, monto, tipo, autor_id, descripcion)
+
 
 if __name__ == "__main__": 
     menu_principal()
