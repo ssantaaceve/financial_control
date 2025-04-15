@@ -25,16 +25,14 @@ def pantalla_inicio():
         elif opcion == "3":
             print("👋 Hasta luego.")
             break
-
         else:
             print("❌ Opción inválida. Intenta de nuevo.")
 
 
-
 #En esta funcion se encuentra el menu de navegacion cuando el usuario ingrese
-def menu_principal():
+def menu_principal(usuario):
     while True:
-        print("\n=== Menú Principal ===")
+        print(f'\n=== Bienvenido {usuario['nombre']} Menú Principal ===')
         print("1. Registrar movimiento")
         print("2. Salir")
 
@@ -49,7 +47,7 @@ def menu_principal():
             print("❌ Opción inválida, intenta de nuevo.")
 
 
-
+#funcion para iniciar sesion de usuario
 def iniciar_sesion():
     correo = input("Correo: ").strip()  # Solicitar correo al usuario
     contraseña = input("Contraseña: ").strip()  # Solicitar contraseña al usuario
@@ -62,6 +60,7 @@ def iniciar_sesion():
     else:
         print("❌ Error en inicio de sesión. Intenta de nuevo.")
         return None
+#Función para realizar registro de usarios
 def menu_registro_usuarios():  # Esta función muestra un menú para registrar usuarios
     while True:  # Ciclo que se repite hasta que el usuario decida salir
         print("\n=== Registro de Usuario ===")  # Título para identificar el menú
@@ -83,7 +82,7 @@ def menu_registro_usuarios():  # Esta función muestra un menú para registrar u
         if crear_otro == 'no':  # Si escribe "no", salimos del menú
             print("👋 Saliste de la creación de usuarios.")  # Mensaje de despedida
             break  # Finalizamos el ciclo while
-
+#Función para realizar registro de pareja
 def pareja_creacion(): #Funcion para crear pareja
 
     # Pregunta inicial para saber si el usuario quiere crear una pareja
@@ -101,7 +100,7 @@ def pareja_creacion(): #Funcion para crear pareja
 
     else:
         print("❌ El usuario no quiso crear una pareja.")
-
+#Función para registrar movimientos en el app
 def registrar_movimiento():
     print("=== Registro de Movimiento ===")
 
@@ -115,7 +114,11 @@ def registrar_movimiento():
 
     registrar_movimiento_DB(pareja_id, fecha, categoria, monto, tipo, autor_id, descripcion)
 
-
+#Funcion
 if __name__ == "__main__": 
-    pantalla_inicio()
+    usuario_logueado = pantalla_inicio()
+    
+    if usuario_logueado:
+        menu_principal(usuario_logueado)
+
 
