@@ -9,6 +9,27 @@ def registrar_movimiento_DB(pareja_id, fecha, categoria, monto, tipo, autor_id, 
         # Conectarse a la base de datos
         conexion = sqlite3.connect(DB_PATH)
         cursor = conexion.cursor()
+        # ✅ Validar si existe la pareja
+        cursor.execute("SELECT id FROM parejas WHERE id = ?", (pareja_id,))
+        pareja_existente = cursor.fetchone()
+        if not pareja_existente:
+            print("❌ Error: La pareja con ese ID no existe.")
+            conexion.close()
+            return
+
+        # ✅ Validar si existe el autor
+        cursor.execute("SELECT id FROM usuarios WHERE id = ?", (autor_id,))
+        autor_existente = cursor.fetchone()
+        if not autor_existente:
+            print("❌ Error: El autor con ese ID no existe.")
+            conexion.close()
+            return
+
+        # ✅ Validar que tipo sea ingreso o gasto
+        if tipo.lower() not in ['ingreso', 'gasto']:
+            print("❌ Tipo inválido. Debe ser 'ingreso' o 'gasto'.")
+            conexion.close()
+            return
 
         # Insertar el movimiento
         cursor.execute("""

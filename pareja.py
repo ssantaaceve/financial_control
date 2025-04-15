@@ -8,7 +8,7 @@ def crear_pareja (nombre_pareja, correo_1, correo_2):
         conexion = sqlite3.connect(DB_PATH) #Nos conectamos a la base de datos
         cursor = conexion.cursor() #linea que crea el cursor que es como la forma en la cual podemos empezar a escribir y leer en la base de datos
 
-        cursor.execute("SELECT id FROM usuarios where correo = ?", (correo_1)) #con
+        cursor.execute("SELECT id FROM usuarios where correo = ?", (correo_1)) 
         usuario1 = cursor.fetchone()
 
         cursor.execute("SELECT id FROM usuarios where correo = ?", (correo_2))

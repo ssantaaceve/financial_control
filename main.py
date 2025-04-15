@@ -1,31 +1,67 @@
 #doc para hacer pruebas
-from usuario import registrar_usuario
+from usuario import registrar_usuario, iniciar_sesion_db
 from pareja import crear_pareja
 from movimientos import registrar_movimiento_DB
 
-#En esta funcion se encuentra el menu principal
-def menu_principal():
+#En esta funcion se encuentra la pantalla principal del progra,a
+def pantalla_inicio():
     while True:
-        print("\n=== Menú Principal ===")
-        print("1. Registrar usuario")
-        print("2. Crear pareja")
-        print("3. Registrar movimiento")
-        print("4. Salir")
+        print("\n=== Bienvenido a Finanzas en Pareja 💰❤️ ===")
+        print("1. Registrarme")
+        print("2. Iniciar sesión")
+        print("3. Salir")
 
         opcion = input("Selecciona una opción: ")
 
         if opcion == "1":
-            menu_registro_usuarios()  # Aquí llamas a la función que hiciste para registrar
+            menu_registro_usuarios()
+
         elif opcion == "2":
-            pareja_creacion()  # Esta sería funcion para crear una pareja
+            usuario = iniciar_sesion()  # Llamamos la función de iniciar_sesion() que no necesita parámetros
+            if usuario:
+                print(f"🌟 ¡Bienvenido {usuario['nombre']}!")
+                return usuario  # Lo usas para pasar al menú principal
+
         elif opcion == "3":
+            print("👋 Hasta luego.")
+            break
+
+        else:
+            print("❌ Opción inválida. Intenta de nuevo.")
+
+
+
+#En esta funcion se encuentra el menu de navegacion cuando el usuario ingrese
+def menu_principal():
+    while True:
+        print("\n=== Menú Principal ===")
+        print("1. Registrar movimiento")
+        print("2. Salir")
+
+        opcion = input("Selecciona una opción: ")
+
+        if opcion == "1":
             registrar_movimiento()  # Esta es una funcion creada para registrar un movimiento
-        elif opcion == "4":
+        elif opcion == "2":
             print("👋 Hasta luego")
             break
         else:
             print("❌ Opción inválida, intenta de nuevo.")
 
+
+
+def iniciar_sesion():
+    correo = input("Correo: ").strip()  # Solicitar correo al usuario
+    contraseña = input("Contraseña: ").strip()  # Solicitar contraseña al usuario
+
+    # Aquí llamas la función iniciar_sesion desde usuario.py
+    usuario = iniciar_sesion_db(correo, contraseña)  # Pasas los datos del correo y contraseña a la función de usuario.py
+
+    if usuario:
+        return usuario  # Si la función retorna un usuario válido, lo regresamos
+    else:
+        print("❌ Error en inicio de sesión. Intenta de nuevo.")
+        return None
 def menu_registro_usuarios():  # Esta función muestra un menú para registrar usuarios
     while True:  # Ciclo que se repite hasta que el usuario decida salir
         print("\n=== Registro de Usuario ===")  # Título para identificar el menú
@@ -81,5 +117,5 @@ def registrar_movimiento():
 
 
 if __name__ == "__main__": 
-    menu_principal()
+    pantalla_inicio()
 

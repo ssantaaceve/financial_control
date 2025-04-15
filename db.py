@@ -51,5 +51,4 @@ def crear_tablas():
     conexion.close() #  cierra la conexión.
     print("✅ Tablas creadas correctamente.")
 
-
 crear_tablas()
