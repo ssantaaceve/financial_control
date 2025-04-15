@@ -8,16 +8,27 @@ def registrar_usuario(nombre, correo, contraseña): # Creamos la funcion para re
         conexion = sqlite3.connect(DB_PATH)
         cursor = conexion.cursor()
 
-        cursor.execute("""
-            INSERT INTO usuarios (nombre, correo, contraseña)
-            VALUES (?, ?, ?);
-        """, (nombre, correo, contraseña))
+        cursor.execute(
+            "SELECT correo FROM usuarios WHERE correo = ?", (correo,))
+        resultado = cursor.fetchone() #busqueda si ya exite el correo
+
+        if resultado:
+            print("✅ Correo ya registrado.")
+            conexion.close()
+            return False  # Ya existe, no se registró
+        else:         
+            cursor.execute("""
+                INSERT INTO usuarios (nombre, correo, contraseña)
+                VALUES (?, ?, ?);
+            """, (nombre, correo, contraseña))
 
         conexion.commit()
         conexion.close()
         print("✅ Usuario registrado con éxito.")
+        return True  # Registro exitoso
     except Exception as e:
         print("❌ Error al registrar el usuario:", e)
+        return False  # Hubo un error, no se registró
 
 def iniciar_sesion_db(correo, contraseña):
     conexion = sqlite3.connect(DB_PATH)
