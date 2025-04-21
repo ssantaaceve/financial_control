@@ -50,23 +50,21 @@ def crear_tablas():
     conexion.commit() #guarda los cambios en el archivo .db.
     conexion.close() #  cierra la conexión.
     print("✅ Tablas creadas correctamente.")
-'''
+crear_tablas()'''
 
-def agregar_campos_usuarios():
+#Comando para agregar o modificar campos en tabla base de datos
+def agregar_campos():
     conexion = sqlite3.connect(DB_PATH)
     cursor = conexion.cursor()
 
     nuevos_campos = {
-        "activo": "BOOLEAN DEFAULT 1",
-        "fecha_creacion": "DATE",
-        "es_admin": "BOOLEAN DEFAULT 0",
-        "ultimo_login": "DATETIME",
-        "telefono": "TEXT"
+        "recurrente": "BOOLEAN DEFAULT 0",
+        "medio_de_pago": "TEXT",
     }
 
     for campo, tipo in nuevos_campos.items():
         try:
-            cursor.execute(f"ALTER TABLE usuarios ADD COLUMN {campo} {tipo};")
+            cursor.execute(f"ALTER TABLE movimientos ADD COLUMN {campo} {tipo};")
             print(f"✅ Campo '{campo}' agregado correctamente.")
         except sqlite3.OperationalError as e:
             print(f"⚠️ No se pudo agregar '{campo}': {e}")
@@ -74,4 +72,4 @@ def agregar_campos_usuarios():
     conexion.commit()
     conexion.close()
 
-agregar_campos_usuarios()
+agregar_campos()
