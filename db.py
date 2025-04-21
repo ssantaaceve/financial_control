@@ -51,7 +51,7 @@ def crear_tablas():
     conexion.close() #  cierra la conexión.
     print("✅ Tablas creadas correctamente.")
 crear_tablas()'''
-'''
+
 #Comando para agregar o modificar campos en tabla base de datos
 def agregar_campos():
     conexion = sqlite3.connect(DB_PATH)
@@ -74,6 +74,7 @@ def agregar_campos():
 
 agregar_campos()
 
+
 '''
 
 def crear_tablas_especifico():
@@ -94,3 +95,4 @@ def crear_tablas_especifico():
     conexion.close()
 
 crear_tablas_especifico()
+'''

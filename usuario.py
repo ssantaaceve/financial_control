@@ -18,8 +18,8 @@ def registrar_usuario(nombre, correo, contraseña): # Creamos la funcion para re
             return False  # Ya existe, no se registró
         else:         
             cursor.execute("""
-                INSERT INTO usuarios (nombre, correo, contraseña)
-                VALUES (?, ?, ?);
+                INSERT INTO usuarios (nombre, correo, contraseña, fecha_creacion)
+                VALUES (?, ?, ?, CURRENT_TIMESTAMP);
             """, (nombre, correo, contraseña))
 
         conexion.commit()
