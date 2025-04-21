@@ -3,7 +3,7 @@ import os #Módulo para interactuar con el sistema operativo (aquí lo usamos pa
 
 
 DB_PATH = os.path.join("data", "finanzas_parejas.db") #se define ruta para que pueda ser trabajada en diferentes sistemas operativos/ Se guarda la base de datos en mi carpeta ya creada. 
-
+'''
 def crear_tablas():
     conexion = sqlite3.connect(DB_PATH) #Abrimos la base de datos que creamos en la variable anterior
     cursor = conexion.cursor() # con este objeto podemos enviar los comando que vamos a escribir a SQL/. en este caso usamos un herramienta de conexion, con cursos podemos mandar comando SQL. 
@@ -50,5 +50,28 @@ def crear_tablas():
     conexion.commit() #guarda los cambios en el archivo .db.
     conexion.close() #  cierra la conexión.
     print("✅ Tablas creadas correctamente.")
+'''
 
-crear_tablas()
+def agregar_campos_usuarios():
+    conexion = sqlite3.connect(DB_PATH)
+    cursor = conexion.cursor()
+
+    nuevos_campos = {
+        "activo": "BOOLEAN DEFAULT 1",
+        "fecha_creacion": "DATE",
+        "es_admin": "BOOLEAN DEFAULT 0",
+        "ultimo_login": "DATETIME",
+        "telefono": "TEXT"
+    }
+
+    for campo, tipo in nuevos_campos.items():
+        try:
+            cursor.execute(f"ALTER TABLE usuarios ADD COLUMN {campo} {tipo};")
+            print(f"✅ Campo '{campo}' agregado correctamente.")
+        except sqlite3.OperationalError as e:
+            print(f"⚠️ No se pudo agregar '{campo}': {e}")
+
+    conexion.commit()
+    conexion.close()
+
+agregar_campos_usuarios()
