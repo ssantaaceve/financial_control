@@ -51,7 +51,7 @@ def crear_tablas():
     conexion.close() #  cierra la conexión.
     print("✅ Tablas creadas correctamente.")
 crear_tablas()'''
-
+'''
 #Comando para agregar o modificar campos en tabla base de datos
 def agregar_campos():
     conexion = sqlite3.connect(DB_PATH)
@@ -73,3 +73,24 @@ def agregar_campos():
     conexion.close()
 
 agregar_campos()
+
+'''
+
+def crear_tablas_especifico():
+    conexion = sqlite3.connect(DB_PATH)  # Abrimos la base de datos
+    cursor = conexion.cursor()  # Creamos el cursor para ejecutar comandos SQL
+
+    # Tabla de categorías
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS categorias (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        nombre TEXT NOT NULL,
+        tipo TEXT CHECK(tipo IN ('Ingreso', 'Gasto')) NOT NULL
+    );
+    """)
+
+    # Confirmar cambios y cerrar conexión
+    conexion.commit()
+    conexion.close()
+
+crear_tablas_especifico()
