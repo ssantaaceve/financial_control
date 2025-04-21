@@ -67,7 +67,19 @@ def menu_registro_usuarios():  # Esta función muestra un menú para registrar u
 
         nombre = input("Nombre: ").strip()  # Pedimos el nombre y eliminamos espacios extras
         correo = input("Correo: ").strip()  # Pedimos el correo y eliminamos espacios extras
+        
+        # Validación del formato del correo
+        if '@' not in correo:
+            print("❌ El correo debe contener el carácter '@'. Por favor, ingresa un correo válido.")
+            continue  # Vuelve al inicio del ciclo para pedir el correo nuevamente
+            
+        # Validación de la contraseña
         contraseña = input("Contraseña: ").strip()  # Pedimos la contraseña y eliminamos espacios extras
+        confirmar_contraseña = input("Confirma tu contraseña: ").strip()  # Pedimos confirmación de la contraseña
+        
+        if contraseña != confirmar_contraseña:
+            print("❌ Las contraseñas no coinciden. Por favor, inténtalo de nuevo.")
+            continue  # Vuelve al inicio del ciclo
 
         # Validamos que ningún campo esté vacío
         if not nombre or not correo or not contraseña:
