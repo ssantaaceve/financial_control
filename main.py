@@ -1,7 +1,7 @@
 #doc para hacer pruebas
 from usuario import registrar_usuario, iniciar_sesion_db
 from pareja import crear_pareja
-from movimientos import registrar_movimiento_DB
+from movimientos import registrar_movimiento_DB, obtener_resumen_financiero
 
 #En esta funcion se encuentra la pantalla principal del progra,a
 def pantalla_inicio():
@@ -30,32 +30,56 @@ def pantalla_inicio():
 #En esta funcion se encuentra el menu de navegacion cuando el usuario ingrese
 def menu_principal(usuario):
     while True:
-        print(f'\n=== Bienvenido {usuario['nombre']} Menú Principal ===')
+        # Obtener resumen financiero
+        resumen = obtener_resumen_financiero(usuario['id'])
+        
+        if resumen:
+            print("\n=== 📊 Resumen Financiero del Mes ===")
+            print(f"💰 Ingresos: ${resumen['ingresos']:,.2f}")
+            print(f"💸 Gastos: ${resumen['gastos']:,.2f}")
+            print(f"💵 Balance: ${resumen['balance']:,.2f}")
+            print("=" * 40)
+
+        print(f'\n=== Bienvenido {usuario["nombre"]} Menú Principal ===')
         print("1. Registrar movimiento")
-        print("2. Salir")
+        print("2. Crear pareja")
+        print("3. Ver historial de movimientos")
+        print("4. Salir")
 
         opcion = input("Selecciona una opción: ")
 
         if opcion == "1":
-            registrar_movimiento()  # Esta es una funcion creada para registrar un movimiento
+            registrar_movimiento(usuario)  # Esta es una funcion creada para registrar un movimiento
         elif opcion == "2":
+            pareja_creacion()  # Función para crear pareja
+        elif opcion == "3":
+            print("Historial de movimientos (pendiente de implementar)")
+        elif opcion == "4":
             print("👋 Hasta luego")
             break
         else:
             print("❌ Opción inválida, intenta de nuevo.")
 #funcion para iniciar sesion de usuario
 def iniciar_sesion():
-    correo = input("Correo: ").strip()  # Solicitar correo al usuario
-    contraseña = input("Contraseña: ").strip()  # Solicitar contraseña al usuario
+    while True:  # Ciclo que se repite hasta que el usuario decida no intentar más
+        print("\n=== Inicio de Sesión ===")
+        correo = input("Correo: ").strip()  # Solicitar correo al usuario
+        contraseña = input("Contraseña: ").strip()  # Solicitar contraseña al usuario
 
-    # Aquí llamas la función iniciar_sesion desde usuario.py
-    usuario = iniciar_sesion_db(correo, contraseña)  # Pasas los datos del correo y contraseña a la función de usuario.py
+        # Aquí llamas la función iniciar_sesion desde usuario.py
+        usuario = iniciar_sesion_db(correo, contraseña)  # Pasas los datos del correo y contraseña a la función de usuario.py
 
-    if usuario:
-        return usuario  # Si la función retorna un usuario válido, lo regresamos
-    else:
-        print("❌ Error en inicio de sesión. Intenta de nuevo.")
-        return None
+        if usuario:
+            return usuario  # Si la función retorna un usuario válido, lo regresamos
+        
+        # Si el inicio de sesión falla, preguntamos si quiere intentar de nuevo
+        opcion = input("\n¿Deseas intentar de nuevo? (sí/no): ").strip().lower()
+        if opcion == 'si':
+            continue
+        else:
+            print("👋 Volviendo al menú principal.")
+            pantalla_inicio()  # Volvemos al menú principal
+            return None  # Retornamos None para indicar que no hay usuario logueado
 #Funcion para realizar registro de usuarios
 def menu_registro_usuarios():  
     while True:  # Ciclo que se repite hasta que el usuario decida salir
@@ -114,18 +138,34 @@ def pareja_creacion(): #Funcion para crear pareja
     else:
         print("❌ El usuario no quiso crear una pareja.")
 #Función para registrar movimientos en el app
-def registrar_movimiento():
-    print("=== Registro de Movimiento ===")
-
-    pareja_id = input("ID de la pareja: ")
-    fecha = input("Fecha (YYYY-MM-DD): ")
-    categoria = input("Categoría (Ej: Comida, Transporte, etc.): ")
+def registrar_movimiento(usuario):
+    print("\n=== Registro de Movimiento ===")
+    
+    # Preguntar si es movimiento de pareja
+    es_pareja = input("¿Es un movimiento de pareja? (sí/no): ").strip().lower()
+    
+    # Si es movimiento de pareja, pedir el ID de la pareja
+    pareja_id = None
+    if es_pareja == 'sí':
+        pareja_id = input("ID de la pareja: ").strip()
+        if not pareja_id:
+            print("❌ Debes ingresar un ID de pareja válido.")
+            return
+    
+    # Solicitar información del movimiento
+    fecha = input("Fecha (YYYY-MM-DD): ").strip()
+    categoria = input("Categoría (Ej: Comida, Transporte, etc.): ").strip()
     monto = float(input("Monto: "))
-    tipo = input("Tipo (ingreso/gasto): ")
-    autor_id = input("ID del autor del movimiento: ")
-    descripcion = input("Descripción del movimiento: ")
+    tipo = input("Tipo (ingreso/gasto): ").strip().lower()
+    descripcion = input("Descripción del movimiento: ").strip()
 
-    registrar_movimiento_DB(pareja_id, fecha, categoria, monto, tipo, autor_id, descripcion)
+    # Validar que tipo sea ingreso o gasto
+    if tipo not in ['ingreso', 'gasto']:
+        print("❌ Tipo inválido. Debe ser 'ingreso' o 'gasto'.")
+        return
+
+    # Registrar el movimiento
+    registrar_movimiento_DB(usuario['id'], pareja_id, fecha, categoria, monto, tipo, descripcion)
 
 #Funcion principal  
 if __name__ == "__main__": 
