@@ -2,6 +2,7 @@
 from usuario import registrar_usuario, iniciar_sesion_db
 from pareja import crear_pareja
 from movimientos import registrar_movimiento_DB, obtener_resumen_financiero
+from datetime import datetime
 
 #En esta funcion se encuentra la pantalla principal del progra,a
 def pantalla_inicio():
@@ -152,20 +153,37 @@ def registrar_movimiento(usuario):
             print("❌ Debes ingresar un ID de pareja válido.")
             return
     
+    # Obtener la fecha actual
+    fecha_actual = datetime.now().strftime('%Y-%m-%d')
+    print(f"\nFecha del movimiento: {fecha_actual}")
+    
     # Solicitar información del movimiento
-    fecha = input("Fecha (YYYY-MM-DD): ").strip()
     categoria = input("Categoría (Ej: Comida, Transporte, etc.): ").strip()
     monto = float(input("Monto: "))
-    tipo = input("Tipo (ingreso/gasto): ").strip().lower()
+    
+    # Menú para seleccionar tipo de movimiento
+    print("\nSelecciona el tipo de movimiento:")
+    print("1. Ingreso")
+    print("2. Gasto")
+    
+    while True:
+        try:
+            opcion = int(input("Opción (1-2): "))
+            if opcion == 1:
+                tipo = "Ingreso"
+                break
+            elif opcion == 2:
+                tipo = "Gasto"
+                break
+            else:
+                print("❌ Opción inválida. Debe ser 1 o 2.")
+        except ValueError:
+            print("❌ Debes ingresar un número (1 o 2).")
+    
     descripcion = input("Descripción del movimiento: ").strip()
 
-    # Validar que tipo sea ingreso o gasto
-    if tipo not in ['ingreso', 'gasto']:
-        print("❌ Tipo inválido. Debe ser 'ingreso' o 'gasto'.")
-        return
-
     # Registrar el movimiento
-    registrar_movimiento_DB(usuario['id'], pareja_id, fecha, categoria, monto, tipo, descripcion)
+    registrar_movimiento_DB(usuario['id'], pareja_id, fecha_actual, categoria, monto, tipo, descripcion)
 
 #Funcion principal  
 if __name__ == "__main__": 
