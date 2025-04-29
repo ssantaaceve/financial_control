@@ -13,7 +13,7 @@ def registrar_usuario(nombre, correo, contraseña): # Creamos la funcion para re
         resultado = cursor.fetchone() #busqueda si ya exite el correo
 
         if resultado:
-            print("✅ Correo ya registrado.")
+            print("✅ Correo ya registrado. Intenta con otro correo.")
             conexion.close()
             return False  # Ya existe, no se registró
         else:         
@@ -24,7 +24,6 @@ def registrar_usuario(nombre, correo, contraseña): # Creamos la funcion para re
 
         conexion.commit()
         conexion.close()
-        print("✅ Usuario registrado con éxito.")
         return True  # Registro exitoso
     except Exception as e:
         print("❌ Error al registrar el usuario:", e)

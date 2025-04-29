@@ -27,8 +27,6 @@ def pantalla_inicio():
             break
         else:
             print("❌ Opción inválida. Intenta de nuevo.")
-
-
 #En esta funcion se encuentra el menu de navegacion cuando el usuario ingrese
 def menu_principal(usuario):
     while True:
@@ -45,8 +43,6 @@ def menu_principal(usuario):
             break
         else:
             print("❌ Opción inválida, intenta de nuevo.")
-
-
 #funcion para iniciar sesion de usuario
 def iniciar_sesion():
     correo = input("Correo: ").strip()  # Solicitar correo al usuario
@@ -60,8 +56,8 @@ def iniciar_sesion():
     else:
         print("❌ Error en inicio de sesión. Intenta de nuevo.")
         return None
-#Función para realizar registro de usarios
-def menu_registro_usuarios():  # Esta función muestra un menú para registrar usuarios
+#Funcion para realizar registro de usuarios
+def menu_registro_usuarios():  
     while True:  # Ciclo que se repite hasta que el usuario decida salir
         print("\n=== Registro de Usuario ===")  # Título para identificar el menú
 
@@ -86,13 +82,18 @@ def menu_registro_usuarios():  # Esta función muestra un menú para registrar u
             print("❌ Todos los campos son obligatorios. Intenta de nuevo.")  # Mensaje de error si falta algo
             continue  # Vuelve al inicio del ciclo
 
-        registrar_usuario(nombre, correo, contraseña)  # Llamamos a la función que guarda al usuario en la base de datos
+        # Registramos el usuario en la base de datos
+        if registrar_usuario(nombre, correo, contraseña):  # Si el registro fue exitoso
+            print("✅ Usuario registrado con éxito.")
+            pantalla_inicio()  # Volvemos al menú principal
+            break  # Salimos del ciclo de registro de usuarios
 
         crear_otro = input("¿Te gustaría crear otro usuario? (sí/no): ").strip().lower()  
         # Preguntamos si quiere crear otro usuario, quitamos espacios y pasamos todo a minúsculas
 
         if crear_otro == 'no':  # Si escribe "no", salimos del menú
             print("👋 Saliste de la creación de usuarios.")  # Mensaje de despedida
+            pantalla_inicio()  # Volvemos al menú principal
             break  # Finalizamos el ciclo while
 #Función para realizar registro de pareja
 def pareja_creacion(): #Funcion para crear pareja
@@ -126,7 +127,7 @@ def registrar_movimiento():
 
     registrar_movimiento_DB(pareja_id, fecha, categoria, monto, tipo, autor_id, descripcion)
 
-#Funcion
+#Funcion principal  
 if __name__ == "__main__": 
     usuario_logueado = pantalla_inicio()
     
