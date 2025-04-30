@@ -1,5 +1,6 @@
 import  sqlite3 #Modlulo estandar de base de datos para trabajar con sql lite, el import nos trae el repositorio
 import os #Módulo para interactuar con el sistema operativo (aquí lo usamos para construir la ruta al archivo de la base de datos). con este modulo puedo usar python para interactuar con el sistema operativo en general
+from datetime import datetime
 
 
 DB_PATH = os.path.join("data", "finanzas_parejas.db") #se define ruta para que pueda ser trabajada en diferentes sistemas operativos/ Se guarda la base de datos en mi carpeta ya creada. 
@@ -51,7 +52,7 @@ def crear_tablas():
     conexion.close() #  cierra la conexión.
     print("✅ Tablas creadas correctamente.")
 crear_tablas()'''
-
+'''
 #Comando para agregar o modificar campos en tabla base de datos
 def agregar_campos():
     conexion = sqlite3.connect(DB_PATH)
@@ -73,7 +74,7 @@ def agregar_campos():
     conexion.close()
 
 agregar_campos()
-
+'''
 
 '''
 
@@ -96,3 +97,56 @@ def crear_tablas_especifico():
 
 crear_tablas_especifico()
 '''
+
+def estandarizar_tipos_movimientos():
+    """
+    Estandariza los tipos de movimientos en la base de datos.
+    Convierte todos los 'ingreso' a 'Ingreso' y 'gasto' a 'Gasto'.
+    Esta función solo debe ejecutarse una vez.
+    """
+    try:
+        conexion = sqlite3.connect(DB_PATH)
+        cursor = conexion.cursor()
+
+        # Actualizar todos los registros que tengan 'ingreso' a 'Ingreso'
+        cursor.execute("""
+            UPDATE movimientos 
+            SET tipo = 'Ingreso' 
+            WHERE LOWER(tipo) = 'ingreso'
+        """)
+
+        # Actualizar todos los registros que tengan 'gasto' a 'Gasto'
+        cursor.execute("""
+            UPDATE movimientos 
+            SET tipo = 'Gasto' 
+            WHERE LOWER(tipo) = 'gasto'
+        """)
+
+        # Confirmar los cambios
+        conexion.commit()
+        
+        # Obtener estadísticas de la actualización
+        cursor.execute("SELECT COUNT(*) FROM movimientos WHERE tipo = 'Ingreso'")
+        ingresos = cursor.fetchone()[0]
+        cursor.execute("SELECT COUNT(*) FROM movimientos WHERE tipo = 'Gasto'")
+        gastos = cursor.fetchone()[0]
+        
+        conexion.close()
+        
+        return {
+            "success": True,
+            "message": "✅ Tipos de movimientos estandarizados correctamente.",
+            "estadisticas": {
+                "total_ingresos": ingresos,
+                "total_gastos": gastos
+            }
+        }
+        
+    except Exception as e:
+        return {
+            "success": False,
+            "message": f"❌ Error al estandarizar los tipos de movimientos: {e}",
+            "estadisticas": None
+        }
+    
+estandarizar_tipos_movimientos()

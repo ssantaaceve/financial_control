@@ -11,9 +11,9 @@ def registrar_movimiento_DB(autor_id, pareja_id, fecha, categoria, monto, tipo, 
         conexion = sqlite3.connect(DB_PATH)
         cursor = conexion.cursor()
 
-        # Validar que tipo sea ingreso o gasto
-        if tipo.lower() not in ['ingreso', 'gasto']:
-            print("❌ Tipo inválido. Debe ser 'ingreso' o 'gasto'.")
+        # Validar que tipo sea Ingreso o Gasto
+        if tipo not in ['Ingreso', 'Gasto']:
+            print("❌ Tipo inválido. Debe ser 'Ingreso' o 'Gasto'.")
             conexion.close()
             return
 
@@ -47,15 +47,15 @@ def obtener_resumen_financiero(autor_id):
         cursor = conexion.cursor()
 
         # Obtener la fecha actual y el primer día del mes
-        fecha_actual = datetime.now()
-        primer_dia_mes = fecha_actual.replace(day=1)
+        fecha_actual = datetime.now().strftime('%Y-%m-%d')
+        primer_dia_mes = datetime.now().replace(day=1).strftime('%Y-%m-%d')
 
         # Consulta para obtener ingresos del mes
         cursor.execute("""
             SELECT COALESCE(SUM(monto), 0) 
             FROM movimientos 
             WHERE autor_id = ? 
-            AND tipo = 'ingreso' 
+            AND tipo = 'Ingreso' 
             AND fecha >= ? 
             AND fecha <= ?
         """, (autor_id, primer_dia_mes, fecha_actual))
@@ -66,7 +66,7 @@ def obtener_resumen_financiero(autor_id):
             SELECT COALESCE(SUM(monto), 0) 
             FROM movimientos 
             WHERE autor_id = ? 
-            AND tipo = 'gasto' 
+            AND tipo = 'Gasto' 
             AND fecha >= ? 
             AND fecha <= ?
         """, (autor_id, primer_dia_mes, fecha_actual))
