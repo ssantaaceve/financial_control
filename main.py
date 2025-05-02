@@ -43,7 +43,6 @@ def menu_principal(usuario):
 
         print(f'\n=== Bienvenido {usuario["nombre"]} Menú Principal ===')
         print("1. Registrar movimiento")
-        # print("2. Crear pareja")  # Funcionalidad temporalmente deshabilitada
         print("2. Ver historial de movimientos")
         print("3. Salir")
 
@@ -51,8 +50,8 @@ def menu_principal(usuario):
 
         if opcion == "1":
             registrar_movimiento(usuario)
-        # elif opcion == "2":
-        #     pareja_creacion()  # Funcionalidad temporalmente deshabilitada
+            # Limpiar la pantalla y volver al menú principal
+            print("\n" * 2)  # Agregar espacio para separar
         elif opcion == "2":
             print("Historial de movimientos (pendiente de implementar)")
         elif opcion == "3":
@@ -124,48 +123,62 @@ def menu_registro_usuarios():
 def registrar_movimiento(usuario):
     print("\n=== Registro de Movimiento ===")
     
-    # Preguntar si es movimiento de pareja
-    es_pareja = input("¿Es un movimiento de pareja? (sí/no): ").strip().lower()
-    
-    # Si es movimiento de pareja, pedir el ID de la pareja
-    pareja_id = None
-    if es_pareja == 'sí':
-        pareja_id = input("ID de la pareja: ").strip()
-        if not pareja_id:
-            print("❌ Debes ingresar un ID de pareja válido.")
-            return
-    
     # Obtener la fecha actual
     fecha_actual = datetime.now().strftime('%Y-%m-%d')
     print(f"\nFecha del movimiento: {fecha_actual}")
     
-    # Solicitar información del movimiento
-    categoria = input("Categoría (Ej: Comida, Transporte, etc.): ").strip()
-    monto = float(input("Monto: "))
+    # Validación de categoría
+    while True:
+        categoria = input("Categoría (Ej: Comida, Transporte, Salario, etc.): ").strip()
+        if categoria and len(categoria) <= 50:  # Validar que no esté vacío y tenga longitud razonable
+            break
+        print("❌ La categoría no puede estar vacía y debe tener máximo 50 caracteres.")
     
-    # Menú para seleccionar tipo de movimiento
-    print("\nSelecciona el tipo de movimiento:")
-    print("1. Ingreso")
-    print("2. Gasto")
-    
+    # Validación de monto
     while True:
         try:
+            monto = float(input("Monto: "))
+            if monto > 0:  # Validar que el monto sea positivo
+                break
+            print("❌ El monto debe ser un número positivo.")
+        except ValueError:
+            print("❌ Por favor, ingresa un número válido.")
+    
+    # Menú para seleccionar tipo de movimiento con validación
+    while True:
+        print("\nSelecciona el tipo de movimiento:")
+        print("1. Ingreso")
+        print("2. Gasto")
+        
+        try:
             opcion = int(input("Opción (1-2): "))
-            if opcion == 1:
-                tipo = "Ingreso"
+            if opcion in [1, 2]:
+                tipo = "Ingreso" if opcion == 1 else "Gasto"
                 break
-            elif opcion == 2:
-                tipo = "Gasto"
-                break
-            else:
-                print("❌ Opción inválida. Debe ser 1 o 2.")
+            print("❌ Opción inválida. Debe ser 1 o 2.")
         except ValueError:
             print("❌ Debes ingresar un número (1 o 2).")
     
-    descripcion = input("Descripción del movimiento: ").strip()
+    # Validación de descripción
+    while True:
+        descripcion = input("Descripción del movimiento: ").strip()
+        if descripcion and len(descripcion) <= 200:  # Validar que no esté vacío y tenga longitud razonable
+            break
+        print("❌ La descripción no puede estar vacía y debe tener máximo 200 caracteres.")
 
-    # Registrar el movimiento
-    registrar_movimiento_DB(usuario['id'], pareja_id, fecha_actual, categoria, monto, tipo, descripcion)
+    # Confirmación del movimiento
+    print("\n=== Resumen del Movimiento ===")
+    print(f"Fecha: {fecha_actual}")
+    print(f"Categoría: {categoria}")
+    print(f"Monto: ${monto:,.2f}")
+    print(f"Tipo: {tipo}")
+    print(f"Descripción: {descripcion}")
+    
+    confirmar = input("\n¿Confirmar el registro de este movimiento? (si/no): ").strip().lower()
+    
+    if confirmar == 'si':
+        # Registrar el movimiento
+        registrar_movimiento_DB(usuario['id'], None, fecha_actual, categoria, monto, tipo, descripcion)
 
 #Funcion principal  
 if __name__ == "__main__": 
