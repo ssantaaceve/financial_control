@@ -1,5 +1,5 @@
 #doc para hacer pruebas
-from usuario import registrar_usuario, iniciar_sesion_db
+from usuario import registrar_usuario, iniciar_sesion_db, actualizar_correo_usuario, actualizar_contraseña_usuario, actualizar_nombre_usuario, obtener_datos_usuario
 from pareja import crear_pareja
 from movimientos import (
     registrar_movimiento_DB, 
@@ -26,18 +26,17 @@ def pantalla_inicio():
 
         if opcion == "1":
             menu_registro_usuarios()
-
         elif opcion == "2":
-            usuario = iniciar_sesion()  # Llamamos la función de iniciar_sesion() que no necesita parámetros
+            usuario = iniciar_sesion()
             if usuario:
                 print(f"🌟 ¡Bienvenido {usuario['nombre']}!")
-                return usuario  # Lo usas para pasar al menú principal
-
+                return usuario
         elif opcion == "3":
             print("👋 Hasta luego.")
             break
         else:
             print("❌ Opción inválida. Intenta de nuevo.")
+
 #En esta funcion se encuentra el menu de navegacion cuando el usuario ingrese
 def menu_principal(usuario):
     while True:
@@ -66,7 +65,8 @@ def menu_principal(usuario):
         print("2. Registrar movimiento recurrente")
         print("3. Ver movimientos recurrentes")
         print("4. Ver historial de movimientos")
-        print("5. Salir")
+        print("5. Configuración de perfil")
+        print("6. Salir")
 
         opcion = input("Selecciona una opción: ")
 
@@ -79,31 +79,30 @@ def menu_principal(usuario):
         elif opcion == "4":
             ver_historial_movimientos(usuario)
         elif opcion == "5":
+            menu_configuracion(usuario)
+        elif opcion == "6":
             print("👋 Hasta luego")
             break
         else:
             print("❌ Opción inválida, intenta de nuevo.")
+
 #funcion para iniciar sesion de usuario
 def iniciar_sesion():
-    while True:  # Ciclo que se repite hasta que el usuario decida no intentar más
+    while True:
         print("\n=== Inicio de Sesión ===")
-        correo = input("Correo: ").strip()  # Solicitar correo al usuario
-        contraseña = input("Contraseña: ").strip()  # Solicitar contraseña al usuario
+        correo = input("Correo: ").strip()
+        contraseña = input("Contraseña: ").strip()
 
-        # Aquí llamas la función iniciar_sesion desde usuario.py
-        usuario = iniciar_sesion_db(correo, contraseña)  # Pasas los datos del correo y contraseña a la función de usuario.py
+        usuario = iniciar_sesion_db(correo, contraseña)
 
         if usuario:
-            return usuario  # Si la función retorna un usuario válido, lo regresamos
+            return usuario
         
-        # Si el inicio de sesión falla, preguntamos si quiere intentar de nuevo
         opcion = input("\n¿Deseas intentar de nuevo? (sí/no): ").strip().lower()
-        if opcion == 'si':
-            continue
-        else:
+        if opcion != 'si':
             print("👋 Volviendo al menú principal.")
-            pantalla_inicio()  # Volvemos al menú principal
-            return None  # Retornamos None para indicar que no hay usuario logueado
+            return None
+
 #Funcion para realizar registro de usuarios
 def menu_registro_usuarios():  
     while True:  # Ciclo que se repite hasta que el usuario decida salir
@@ -133,16 +132,15 @@ def menu_registro_usuarios():
         # Registramos el usuario en la base de datos
         if registrar_usuario(nombre, correo, contraseña):  # Si el registro fue exitoso
             print("✅ Usuario registrado con éxito.")
-            pantalla_inicio()  # Volvemos al menú principal
-            break  # Salimos del ciclo de registro de usuarios
+            return
 
         crear_otro = input("¿Te gustaría crear otro usuario? (sí/no): ").strip().lower()  
         # Preguntamos si quiere crear otro usuario, quitamos espacios y pasamos todo a minúsculas
 
         if crear_otro == 'no':  # Si escribe "no", salimos del menú
             print("👋 Saliste de la creación de usuarios.")  # Mensaje de despedida
-            pantalla_inicio()  # Volvemos al menú principal
-            break  # Finalizamos el ciclo while
+            return
+
 #Función para registrar movimientos en el app
 def registrar_movimiento(usuario):
     print("\n=== Registro de Movimiento ===")
@@ -201,8 +199,10 @@ def registrar_movimiento(usuario):
     confirmar = input("\n¿Confirmar el registro de este movimiento? (si/no): ").strip().lower()
     
     if confirmar == 'si':
-        # Registrar el movimiento
-        registrar_movimiento_DB(usuario['id'], None, fecha_actual, categoria, monto, tipo, descripcion)
+        if registrar_movimiento_DB(usuario['id'], None, fecha_actual, categoria, monto, tipo, descripcion):
+            print("✅ Movimiento registrado exitosamente.")
+        else:
+            print("❌ Error al registrar el movimiento.")
     else:
         print("❌ Registro cancelado.")
 
@@ -472,6 +472,69 @@ def ver_historial_movimientos(usuario):
         
         except ValueError:
             print("❌ Por favor, ingresa un número válido.")
+
+def menu_configuracion(usuario):
+    """
+    Menú de configuración del perfil del usuario.
+    """
+    while True:
+        print("\n=== ⚙️ Configuración de Perfil ===")
+        print("1. Ver información del perfil")
+        print("2. Actualizar nombre")
+        print("3. Actualizar correo electrónico")
+        print("4. Cambiar contraseña")
+        print("5. Volver al menú principal")
+        
+        opcion = input("\nSelecciona una opción (1-5): ")
+        
+        if opcion == "1":
+            datos = obtener_datos_usuario(usuario['id'])
+            if datos:
+                print("\n=== Información del Perfil ===")
+                print(f"Nombre: {datos['nombre']}")
+                print(f"Correo electrónico: {datos['correo']}")
+            else:
+                print("❌ No se pudieron obtener los datos del perfil.")
+        
+        elif opcion == "2":
+            nuevo_nombre = input("\nNuevo nombre: ").strip()
+            if nuevo_nombre:
+                if actualizar_nombre_usuario(usuario['id'], nuevo_nombre):
+                    print("✅ Nombre actualizado correctamente.")
+                    usuario['nombre'] = nuevo_nombre  # Actualizar en memoria
+                else:
+                    print("❌ No se pudo actualizar el nombre.")
+            else:
+                print("❌ El nombre no puede estar vacío.")
+        
+        elif opcion == "3":
+            nuevo_correo = input("\nNuevo correo electrónico: ").strip()
+            if nuevo_correo and '@' in nuevo_correo:
+                if actualizar_correo_usuario(usuario['id'], nuevo_correo):
+                    print("✅ Correo electrónico actualizado correctamente.")
+                else:
+                    print("❌ No se pudo actualizar el correo electrónico.")
+            else:
+                print("❌ Por favor, ingresa un correo electrónico válido.")
+        
+        elif opcion == "4":
+            contraseña_actual = input("\nContraseña actual: ").strip()
+            nueva_contraseña = input("Nueva contraseña: ").strip()
+            confirmar_contraseña = input("Confirmar nueva contraseña: ").strip()
+            
+            if nueva_contraseña and nueva_contraseña == confirmar_contraseña:
+                if actualizar_contraseña_usuario(usuario['id'], contraseña_actual, nueva_contraseña):
+                    print("✅ Contraseña actualizada correctamente.")
+                else:
+                    print("❌ No se pudo actualizar la contraseña.")
+            else:
+                print("❌ Las contraseñas no coinciden o están vacías.")
+        
+        elif opcion == "5":
+            return
+        
+        else:
+            print("❌ Opción inválida. Intenta de nuevo.")
 
 #Funcion principal  
 if __name__ == "__main__": 
