@@ -84,3 +84,283 @@ def obtener_resumen_financiero(autor_id):
     except Exception as e:
         print("❌ Error al obtener el resumen financiero:", e)
         return None
+
+def registrar_movimiento_recurrente_DB(autor_id, categoria, monto, tipo, descripcion, frecuencia, fecha_registro, fecha_fin):
+    """
+    Registra un movimiento recurrente en la base de datos.
+    
+    Args:
+        autor_id: ID del usuario que crea el movimiento
+        categoria: Categoría del movimiento
+        monto: Monto del movimiento
+        tipo: Tipo de movimiento (Ingreso/Gasto)
+        descripcion: Descripción del movimiento
+        frecuencia: Frecuencia del movimiento (diario/semanal/mensual)
+        fecha_registro: Fecha específica para registrar el movimiento
+        fecha_fin: Fecha en que termina la recurrencia
+    """
+    try:
+        conexion = sqlite3.connect(DB_PATH)
+        cursor = conexion.cursor()
+
+        # Validar que tipo sea Ingreso o Gasto
+        if tipo not in ['Ingreso', 'Gasto']:
+            print("❌ Tipo inválido. Debe ser 'Ingreso' o 'Gasto'.")
+            conexion.close()
+            return False
+
+        # Validar frecuencia
+        if frecuencia not in ['diario', 'semanal', 'mensual']:
+            print("❌ Frecuencia inválida. Debe ser 'diario', 'semanal' o 'mensual'.")
+            conexion.close()
+            return False
+
+        # Insertar el movimiento recurrente
+        cursor.execute("""
+            INSERT INTO movimientos (
+                autor_id, fecha, categoria, monto, tipo, descripcion,
+                es_recurrente, frecuencia, fecha_registro, fecha_fin, estado
+            )
+            VALUES (?, ?, ?, ?, ?, ?, 1, ?, ?, ?, 'pendiente');
+        """, (autor_id, datetime.now().strftime('%Y-%m-%d'),
+              categoria, monto, tipo, descripcion,
+              frecuencia, fecha_registro, fecha_fin))
+
+        conexion.commit()
+        conexion.close()
+        print("✅ Movimiento recurrente registrado con éxito.")
+        return True
+    
+    except Exception as e:
+        print("❌ Error al registrar el movimiento recurrente:", e)
+        return False
+
+def obtener_movimientos_recurrentes(autor_id):
+    """
+    Obtiene todos los movimientos recurrentes pendientes de un usuario.
+    """
+    try:
+        conexion = sqlite3.connect(DB_PATH)
+        cursor = conexion.cursor()
+
+        cursor.execute("""
+            SELECT id, categoria, monto, tipo, descripcion, frecuencia, fecha_registro, fecha_fin, estado
+            FROM movimientos
+            WHERE autor_id = ?
+            AND es_recurrente = 1
+            AND estado = 'pendiente'
+            AND fecha_fin >= CURRENT_DATE
+            ORDER BY fecha_registro ASC
+        """, (autor_id,))
+        
+        movimientos = cursor.fetchall()
+        conexion.close()
+        
+        return movimientos
+    except Exception as e:
+        print("❌ Error al obtener movimientos recurrentes:", e)
+        return None
+
+def obtener_movimientos_recurrentes_pendientes(autor_id):
+    """
+    Obtiene los movimientos recurrentes que están pendientes de aprobación.
+    """
+    try:
+        conexion = sqlite3.connect(DB_PATH)
+        cursor = conexion.cursor()
+
+        cursor.execute("""
+            SELECT id, categoria, monto, tipo, descripcion, frecuencia, fecha_registro, fecha_fin
+            FROM movimientos
+            WHERE autor_id = ?
+            AND es_recurrente = 1
+            AND estado = 'pendiente'
+            AND fecha_registro <= CURRENT_DATE
+            AND fecha_fin >= CURRENT_DATE
+            ORDER BY fecha_registro ASC
+        """, (autor_id,))
+        
+        movimientos = cursor.fetchall()
+        conexion.close()
+        
+        return movimientos
+    except Exception as e:
+        print("❌ Error al obtener movimientos recurrentes pendientes:", e)
+        return None
+
+def aprobar_movimiento_recurrente(movimiento_id):
+    """
+    Aprueba y registra un movimiento recurrente.
+    Permite registrar el movimiento en la fecha actual, independientemente de la fecha programada.
+    """
+    try:
+        conexion = sqlite3.connect(DB_PATH)
+        cursor = conexion.cursor()
+
+        # Obtener los datos completos del movimiento recurrente
+        cursor.execute("""
+            SELECT autor_id, categoria, monto, tipo, descripcion, fecha_registro, frecuencia
+            FROM movimientos
+            WHERE id = ?
+            AND es_recurrente = 1
+            AND estado = 'pendiente'
+        """, (movimiento_id,))
+        
+        movimiento = cursor.fetchone()
+        if not movimiento:
+            print("❌ Movimiento no encontrado o ya procesado.")
+            return False
+
+        autor_id, categoria, monto, tipo, descripcion, fecha_registro, frecuencia = movimiento
+
+        # Registrar el movimiento con la fecha actual
+        cursor.execute("""
+            INSERT INTO movimientos (
+                autor_id, fecha, categoria, monto, tipo, descripcion
+            )
+            VALUES (?, CURRENT_DATE, ?, ?, ?, ?);
+        """, (autor_id, categoria, monto, tipo, descripcion))
+
+        # Actualizar el estado del movimiento recurrente
+        cursor.execute("""
+            UPDATE movimientos
+            SET estado = 'aprobado'
+            WHERE id = ?
+        """, (movimiento_id,))
+
+        conexion.commit()
+        conexion.close()
+        print(f"✅ Movimiento de {tipo} por ${monto:,.2f} aprobado y registrado correctamente.")
+        return True
+    
+    except sqlite3.Error as e:
+        print(f"❌ Error de base de datos al aprobar el movimiento: {e}")
+        return False
+    except Exception as e:
+        print(f"❌ Error inesperado al aprobar el movimiento: {e}")
+        return False
+
+def rechazar_movimiento_recurrente(movimiento_id):
+    """
+    Rechaza un movimiento recurrente.
+    """
+    try:
+        conexion = sqlite3.connect(DB_PATH)
+        cursor = conexion.cursor()
+
+        cursor.execute("""
+            UPDATE movimientos
+            SET estado = 'rechazado'
+            WHERE id = ?
+        """, (movimiento_id,))
+
+        conexion.commit()
+        conexion.close()
+        print("✅ Movimiento rechazado correctamente.")
+        return True
+    
+    except Exception as e:
+        print("❌ Error al rechazar el movimiento:", e)
+        return False
+
+def procesar_movimientos_recurrentes():
+    """
+    Procesa los movimientos recurrentes y crea los movimientos correspondientes
+    para el día actual si es necesario.
+    """
+    try:
+        conexion = sqlite3.connect(DB_PATH)
+        cursor = conexion.cursor()
+
+        # Obtener la fecha actual
+        fecha_actual = datetime.now().strftime('%Y-%m-%d')
+
+        # Obtener movimientos recurrentes activos
+        cursor.execute("""
+            SELECT id, autor_id, categoria, monto, tipo, descripcion, frecuencia, fecha_fin
+            FROM movimientos
+            WHERE es_recurrente = 1
+            AND fecha_fin >= CURRENT_DATE
+        """)
+        
+        movimientos = cursor.fetchall()
+        
+        for mov in movimientos:
+            mov_id, autor_id, categoria, monto, tipo, descripcion, frecuencia, fecha_fin = mov
+            
+            # Verificar si ya existe un movimiento para hoy
+            cursor.execute("""
+                SELECT COUNT(*)
+                FROM movimientos
+                WHERE autor_id = ?
+                AND categoria = ?
+                AND monto = ?
+                AND tipo = ?
+                AND descripcion = ?
+                AND fecha = ?
+                AND es_recurrente = 0
+            """, (autor_id, categoria, monto, tipo, descripcion, fecha_actual))
+            
+            if cursor.fetchone()[0] == 0:
+                # Crear el movimiento para hoy
+                cursor.execute("""
+                    INSERT INTO movimientos (
+                        autor_id, fecha, categoria, monto, tipo, descripcion
+                    )
+                    VALUES (?, ?, ?, ?, ?, ?);
+                """, (autor_id, fecha_actual, categoria, monto, tipo, descripcion))
+        
+        conexion.commit()
+        conexion.close()
+        return True
+    except Exception as e:
+        print("❌ Error al procesar movimientos recurrentes:", e)
+        return False
+
+def verificar_movimientos_pendientes(autor_id):
+    """
+    Verifica si hay movimientos recurrentes pendientes de aprobación.
+    Muestra todos los movimientos pendientes, independientemente de su fecha de registro.
+    """
+    try:
+        conexion = sqlite3.connect(DB_PATH)
+        cursor = conexion.cursor()
+
+        # Obtener movimientos pendientes
+        cursor.execute("""
+            SELECT COUNT(*), 
+                   GROUP_CONCAT(
+                       categoria || ' ($' || monto || ') - Fecha programada: ' || fecha_registro
+                   ) as movimientos
+            FROM movimientos
+            WHERE autor_id = ?
+            AND es_recurrente = 1
+            AND estado = 'pendiente'
+            AND fecha_fin >= CURRENT_DATE
+        """, (autor_id,))
+        
+        resultado = cursor.fetchone()
+        total_pendientes = resultado[0]
+        lista_movimientos = resultado[1] if resultado[1] else ""
+        
+        conexion.close()
+        
+        if total_pendientes > 0:
+            return {
+                "hay_pendientes": True,
+                "total": total_pendientes,
+                "movimientos": lista_movimientos.split(',')
+            }
+        return {
+            "hay_pendientes": False,
+            "total": 0,
+            "movimientos": []
+        }
+        
+    except Exception as e:
+        print(f"❌ Error al verificar movimientos pendientes: {e}")
+        return {
+            "hay_pendientes": False,
+            "total": 0,
+            "movimientos": []
+        }

@@ -1,7 +1,16 @@
 #doc para hacer pruebas
 from usuario import registrar_usuario, iniciar_sesion_db
 from pareja import crear_pareja
-from movimientos import registrar_movimiento_DB, obtener_resumen_financiero
+from movimientos import (
+    registrar_movimiento_DB, 
+    obtener_resumen_financiero, 
+    registrar_movimiento_recurrente_DB, 
+    obtener_movimientos_recurrentes,
+    verificar_movimientos_pendientes,
+    aprobar_movimiento_recurrente,
+    rechazar_movimiento_recurrente
+)
+from db import actualizar_tabla_movimientos
 from datetime import datetime
 
 #En esta funcion se encuentra la pantalla principal del progra,a
@@ -31,6 +40,16 @@ def pantalla_inicio():
 #En esta funcion se encuentra el menu de navegacion cuando el usuario ingrese
 def menu_principal(usuario):
     while True:
+        # Verificar movimientos pendientes
+        pendientes = verificar_movimientos_pendientes(usuario['id'])
+        if pendientes['hay_pendientes']:
+            print("\n⚠️ Tienes movimientos recurrentes pendientes de aprobación!")
+            print(f"Total pendientes: {pendientes['total']}")
+            print("\nMovimientos pendientes:")
+            for mov in pendientes['movimientos']:
+                print(f"  - {mov}")
+            print("\nRevisa la opción 'Ver movimientos recurrentes' para gestionarlos.")
+        
         # Obtener resumen financiero
         resumen = obtener_resumen_financiero(usuario['id'])
         
@@ -43,18 +62,22 @@ def menu_principal(usuario):
 
         print(f'\n=== Bienvenido {usuario["nombre"]} Menú Principal ===')
         print("1. Registrar movimiento")
-        print("2. Ver historial de movimientos")
-        print("3. Salir")
+        print("2. Registrar movimiento recurrente")
+        print("3. Ver movimientos recurrentes")
+        print("4. Ver historial de movimientos")
+        print("5. Salir")
 
         opcion = input("Selecciona una opción: ")
 
         if opcion == "1":
             registrar_movimiento(usuario)
-            # Limpiar la pantalla y volver al menú principal
-            print("\n" * 2)  # Agregar espacio para separar
         elif opcion == "2":
-            print("Historial de movimientos (pendiente de implementar)")
+            registrar_movimiento_recurrente(usuario)
         elif opcion == "3":
+            ver_movimientos_recurrentes(usuario)
+        elif opcion == "4":
+            print("Historial de movimientos (pendiente de implementar)")
+        elif opcion == "5":
             print("👋 Hasta luego")
             break
         else:
@@ -123,7 +146,7 @@ def menu_registro_usuarios():
 def registrar_movimiento(usuario):
     print("\n=== Registro de Movimiento ===")
     
-    # Obtener la fecha actual
+    # Obtener la fecha actual``
     fecha_actual = datetime.now().strftime('%Y-%m-%d')
     print(f"\nFecha del movimiento: {fecha_actual}")
     
@@ -179,9 +202,169 @@ def registrar_movimiento(usuario):
     if confirmar == 'si':
         # Registrar el movimiento
         registrar_movimiento_DB(usuario['id'], None, fecha_actual, categoria, monto, tipo, descripcion)
+    else:
+        print("❌ Registro cancelado.")
+
+def registrar_movimiento_recurrente(usuario):
+    print("\n=== Registro de Movimiento Recurrente ===")
+    
+    # Validación de categoría
+    while True:
+        categoria = input("Categoría (Ej: Comida, Transporte, Salario, etc.): ").strip()
+        if categoria and len(categoria) <= 50:
+            break
+        print("❌ La categoría no puede estar vacía y debe tener máximo 50 caracteres.")
+    
+    # Validación de monto
+    while True:
+        try:
+            monto = float(input("Monto: "))
+            if monto > 0:
+                break
+            print("❌ El monto debe ser un número positivo.")
+        except ValueError:
+            print("❌ Por favor, ingresa un número válido.")
+    
+    # Menú para seleccionar tipo de movimiento
+    while True:
+        print("\nSelecciona el tipo de movimiento:")
+        print("1. Ingreso")
+        print("2. Gasto")
+        
+        try:
+            opcion = int(input("Opción (1-2): "))
+            if opcion in [1, 2]:
+                tipo = "Ingreso" if opcion == 1 else "Gasto"
+                break
+            print("❌ Opción inválida. Debe ser 1 o 2.")
+        except ValueError:
+            print("❌ Debes ingresar un número (1 o 2).")
+    
+    # Validación de descripción
+    while True:
+        descripcion = input("Descripción del movimiento: ").strip()
+        if descripcion and len(descripcion) <= 200:
+            break
+        print("❌ La descripción no puede estar vacía y debe tener máximo 200 caracteres.")
+
+    # Validación de frecuencia
+    while True:
+        print("\nSelecciona la frecuencia:")
+        print("1. Diario")
+        print("2. Semanal")
+        print("3. Mensual")
+        
+        try:
+            opcion = int(input("Opción (1-3): "))
+            if opcion in [1, 2, 3]:
+                frecuencias = {1: "diario", 2: "semanal", 3: "mensual"}
+                frecuencia = frecuencias[opcion]
+                break
+            print("❌ Opción inválida. Debe ser 1, 2 o 3.")
+        except ValueError:
+            print("❌ Debes ingresar un número (1, 2 o 3).")
+
+    # Validación de fecha de registro
+    while True:
+        try:
+            fecha_registro = input("Fecha de registro (YYYY-MM-DD): ").strip()
+            fecha_registro_dt = datetime.strptime(fecha_registro, '%Y-%m-%d')
+            fecha_actual = datetime.now()
+            
+            if fecha_registro_dt < fecha_actual:
+                print("❌ La fecha de registro no puede ser en el pasado.")
+                continue
+                
+            break
+        except ValueError:
+            print("❌ Formato de fecha inválido. Usa YYYY-MM-DD")
+
+    # Validación de fecha fin
+    while True:
+        try:
+            fecha_fin = input("Fecha de finalización (YYYY-MM-DD): ").strip()
+            fecha_fin_dt = datetime.strptime(fecha_fin, '%Y-%m-%d')
+            
+            if fecha_fin_dt <= fecha_registro_dt:
+                print("❌ La fecha de finalización debe ser posterior a la fecha de registro.")
+                continue
+                
+            break
+        except ValueError:
+            print("❌ Formato de fecha inválido. Usa YYYY-MM-DD")
+
+    # Confirmación del movimiento
+    print("\n=== Resumen del Movimiento Recurrente ===")
+    print(f"Categoría: {categoria}")
+    print(f"Monto: ${monto:,.2f}")
+    print(f"Tipo: {tipo}")
+    print(f"Descripción: {descripcion}")
+    print(f"Frecuencia: {frecuencia}")
+    print(f"Fecha de registro: {fecha_registro}")
+    print(f"Fecha de finalización: {fecha_fin}")
+    
+    while True:
+        confirmar = input("\n¿Confirmar el registro de este movimiento recurrente? (si/no): ").strip().lower()
+        if confirmar in ['si', 'no']:
+            break
+        print("❌ Por favor, responde con 'si' o 'no'.")
+    
+    if confirmar == 'si':
+        if registrar_movimiento_recurrente_DB(usuario['id'], categoria, monto, tipo, descripcion, frecuencia, fecha_registro, fecha_fin):
+            print("✅ Movimiento recurrente registrado con éxito.")
+        else:
+            print("❌ No se pudo registrar el movimiento recurrente.")
+    else:
+        print("❌ Registro cancelado.")
+
+def ver_movimientos_recurrentes(usuario):
+    print("\n=== Movimientos Recurrentes Pendientes ===")
+    movimientos = obtener_movimientos_recurrentes(usuario['id'])
+    
+    if movimientos:
+        for mov in movimientos:
+            print(f"\nID: {mov[0]}")
+            print(f"Categoría: {mov[1]}")
+            print(f"Monto: ${mov[2]:,.2f}")
+            print(f"Tipo: {mov[3]}")
+            print(f"Descripción: {mov[4]}")
+            print(f"Frecuencia: {mov[5]}")
+            print(f"Fecha programada: {mov[6]}")
+            print(f"Fecha de finalización: {mov[7]}")
+            print(f"Estado: {mov[8]}")
+            print("-" * 40)
+            
+            # Si el movimiento está pendiente, ofrecer opciones
+            if mov[8] == 'pendiente':
+                while True:
+                    print("\n¿Qué deseas hacer con este movimiento?")
+                    print("1. Aprobar y registrar (se registrará con la fecha actual)")
+                    print("2. Rechazar")
+                    print("3. Posponer")
+                    
+                    try:
+                        opcion = int(input("Opción (1-3): "))
+                        if opcion == 1:
+                            if aprobar_movimiento_recurrente(mov[0]):
+                                break
+                        elif opcion == 2:
+                            if rechazar_movimiento_recurrente(mov[0]):
+                                break
+                        elif opcion == 3:
+                            print("Movimiento pospuesto para revisión posterior.")
+                            break
+                        else:
+                            print("❌ Opción inválida. Debe ser 1, 2 o 3.")
+                    except ValueError:
+                        print("❌ Por favor, ingresa un número válido (1, 2 o 3).")
+    else:
+        print("No hay movimientos recurrentes pendientes.")
 
 #Funcion principal  
 if __name__ == "__main__": 
+    # Actualizar la base de datos si es necesario
+    actualizar_tabla_movimientos()
+    
     usuario_logueado = pantalla_inicio()
     
     if usuario_logueado:

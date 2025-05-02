@@ -37,15 +37,18 @@ def crear_tablas():
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS movimientos (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
+        autor_id INTEGER,
         pareja_id INTEGER,
         fecha DATE,
         categoria TEXT,
         monto REAL,
         tipo TEXT,
-        autor_id INTEGER,
         descripcion TEXT,
-        FOREIGN KEY (pareja_id) REFERENCES parejas(id),
-        FOREIGN KEY (autor_id) REFERENCES usuarios(id)
+        es_recurrente BOOLEAN DEFAULT 0,
+        frecuencia TEXT,
+        fecha_fin DATE,
+        FOREIGN KEY (autor_id) REFERENCES usuarios(id),
+        FOREIGN KEY (pareja_id) REFERENCES parejas(id)
     );
     """)
     conexion.commit() #guarda los cambios en el archivo .db.
@@ -141,4 +144,42 @@ def estandarizar_tipos_movimientos():
             "message": f"❌ Error al estandarizar los tipos de movimientos: {e}",
             "estadisticas": None
         }
+    
+def actualizar_tabla_movimientos():
+    """
+    Actualiza la tabla movimientos para agregar los campos necesarios para movimientos recurrentes.
+    Esta función es segura para ejecutar en bases de datos existentes.
+    """
+    try:
+        conexion = sqlite3.connect(DB_PATH)
+        cursor = conexion.cursor()
+
+        # Verificar si los campos ya existen
+        cursor.execute("PRAGMA table_info(movimientos)")
+        campos_existentes = [campo[1] for campo in cursor.fetchall()]
+
+        # Agregar campos si no existen
+        nuevos_campos = {
+            "es_recurrente": "BOOLEAN DEFAULT 0",
+            "frecuencia": "TEXT",
+            "fecha_registro": "DATE",  # Fecha específica para registrar el movimiento
+            "fecha_fin": "DATE",
+            "estado": "TEXT DEFAULT 'pendiente'"  # pendiente, aprobado, rechazado
+        }
+
+        for campo, tipo in nuevos_campos.items():
+            if campo not in campos_existentes:
+                cursor.execute(f"ALTER TABLE movimientos ADD COLUMN {campo} {tipo}")
+                print(f"✅ Campo '{campo}' agregado correctamente.")
+            else:
+                print(f"ℹ️ El campo '{campo}' ya existe.")
+
+        conexion.commit()
+        conexion.close()
+        print("✅ Tabla movimientos actualizada correctamente.")
+        return True
+
+    except Exception as e:
+        print(f"❌ Error al actualizar la tabla movimientos: {e}")
+        return False
     
