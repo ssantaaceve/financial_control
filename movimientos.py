@@ -110,8 +110,8 @@ def registrar_movimiento_recurrente_DB(autor_id, categoria, monto, tipo, descrip
             return False
 
         # Validar frecuencia
-        if frecuencia not in ['diario', 'semanal', 'mensual']:
-            print("❌ Frecuencia inválida. Debe ser 'diario', 'semanal' o 'mensual'.")
+        if frecuencia not in ['diario', 'semanal', 'mensual', 'anual']:
+            print("❌ Frecuencia inválida. Debe ser 'diario', 'semanal', 'mensual' o 'anual'.")
             conexion.close()
             return False
 

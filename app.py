@@ -13,11 +13,21 @@ from usuario import (
     actualizar_nombre_usuario,
     obtener_datos_usuario
 )
+from movimientos import (
+    registrar_movimiento_DB,
+    obtener_resumen_financiero,
+    registrar_movimiento_recurrente_DB,
+    obtener_movimientos_recurrentes_pendientes,
+    aprobar_movimiento_recurrente,
+    rechazar_movimiento_recurrente,
+    obtener_historial_movimientos,
+    obtener_categorias_usuario
+)
 
 # Configuración de la página
 st.set_page_config(
     page_title="Control Financiero",
-    page_icon="💰",
+    page_icon="��",
     layout="wide"
 )
 
@@ -27,17 +37,77 @@ DB_PATH = os.path.join("data", "finanzas_parejas.db")
 # Estilos CSS personalizados
 st.markdown("""
     <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
+    
+    * {
+        font-family: 'Montserrat', sans-serif;
+    }
+    
     .main {
         padding: 2rem;
     }
     .stButton>button {
         width: 100%;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-weight: 500;
+        font-family: 'Montserrat', sans-serif;
+    }
+    .stButton>button:hover {
+        background-color: #45a049;
     }
     .metric-card {
         background-color: #f0f2f6;
         padding: 1rem;
         border-radius: 10px;
         margin-bottom: 1rem;
+    }
+    .metric-value {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 600;
+    }
+    .metric-label {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 400;
+        color: #666;
+    }
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 2rem;
+    }
+    .stTabs [data-baseweb="tab"] {
+        padding: 1rem 2rem;
+        font-weight: 500;
+        font-family: 'Montserrat', sans-serif;
+    }
+    .stTabs [aria-selected="true"] {
+        background-color: #E3F2FD;
+        color: #1E88E5;
+    }
+    .stForm {
+        background-color: #f8f9fa;
+        padding: 2rem;
+        border-radius: 10px;
+    }
+    .stAlert {
+        border-radius: 10px;
+    }
+    .stDataFrame {
+        border-radius: 10px;
+    }
+    /* Estilos para los títulos */
+    h1, h2, h3, h4, h5, h6 {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 600;
+    }
+    /* Estilos para los campos de formulario */
+    .stTextInput label,
+    .stNumberInput label,
+    .stSelectbox label {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 500;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -249,11 +319,26 @@ def main():
         if resumen:
             col1, col2, col3 = st.columns(3)
             with col1:
-                st.metric("💰 Ingresos", f"${resumen['ingresos']:,.2f}")
+                st.markdown(f"""
+                    <div class="metric-card">
+                        <div class="metric-label">Ingresos del Mes</div>
+                        <div class="metric-value">${resumen['ingresos']:,.2f}</div>
+                    </div>
+                """, unsafe_allow_html=True)
             with col2:
-                st.metric("💸 Gastos", f"${resumen['gastos']:,.2f}")
+                st.markdown(f"""
+                    <div class="metric-card">
+                        <div class="metric-label">Gastos del Mes</div>
+                        <div class="metric-value">${resumen['gastos']:,.2f}</div>
+                    </div>
+                """, unsafe_allow_html=True)
             with col3:
-                st.metric("💵 Balance", f"${resumen['balance']:,.2f}")
+                st.markdown(f"""
+                    <div class="metric-card">
+                        <div class="metric-label">Balance</div>
+                        <div class="metric-value">${resumen['balance']:,.2f}</div>
+                    </div>
+                """, unsafe_allow_html=True)
 
         # Tabs para diferentes secciones
         tab1, tab2, tab3, tab4 = st.tabs(["📝 Nuevo Movimiento", "🔄 Recurrentes", "📊 Historial", "⚙️ Configuración"])
@@ -286,6 +371,43 @@ def main():
 
         with tab2:
             st.subheader("Movimientos Recurrentes")
+            
+            # Formulario para nuevo movimiento recurrente
+            with st.expander("➕ Registrar Nuevo Movimiento Recurrente"):
+                with st.form("nuevo_movimiento_recurrente"):
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        tipo_recurrente = st.selectbox("Tipo", ["Ingreso", "Gasto"], key="tipo_recurrente")
+                        monto_recurrente = st.number_input("Monto", min_value=0.0, step=0.01, key="monto_recurrente")
+                    with col2:
+                        categoria_recurrente = st.text_input("Categoría", key="categoria_recurrente")
+                        frecuencia = st.selectbox("Frecuencia", ["diario", "semanal", "mensual", "anual"])
+                    
+                    descripcion_recurrente = st.text_area("Descripción", key="descripcion_recurrente")
+                    
+                    col3, col4 = st.columns(2)
+                    with col3:
+                        fecha_inicio = st.date_input("Fecha de inicio")
+                    with col4:
+                        fecha_fin = st.date_input("Fecha de fin")
+                    
+                    if st.form_submit_button("Registrar Movimiento Recurrente"):
+                        if registrar_movimiento_recurrente_DB(
+                            st.session_state.usuario['id'],
+                            categoria_recurrente,
+                            monto_recurrente,
+                            tipo_recurrente,
+                            descripcion_recurrente,
+                            frecuencia,
+                            fecha_inicio.strftime('%Y-%m-%d'),
+                            fecha_fin.strftime('%Y-%m-%d')
+                        ):
+                            st.success("Movimiento recurrente registrado exitosamente")
+                        else:
+                            st.error("Error al registrar el movimiento recurrente")
+            
+            # Mostrar movimientos recurrentes pendientes
+            st.subheader("Movimientos Recurrentes Pendientes")
             movimientos_recurrentes = obtener_movimientos_recurrentes_pendientes(st.session_state.usuario['id'])
             
             if movimientos_recurrentes:
@@ -299,10 +421,14 @@ def main():
                         col1, col2, col3 = st.columns(3)
                         with col1:
                             if st.button("Aprobar", key=f"aprobar_{mov[0]}"):
-                                st.success("Movimiento aprobado")
+                                if aprobar_movimiento_recurrente(mov[0]):
+                                    st.success("Movimiento aprobado exitosamente")
+                                    st.rerun()
                         with col2:
                             if st.button("Rechazar", key=f"rechazar_{mov[0]}"):
-                                st.error("Movimiento rechazado")
+                                if rechazar_movimiento_recurrente(mov[0]):
+                                    st.success("Movimiento rechazado exitosamente")
+                                    st.rerun()
                         with col3:
                             if st.button("Posponer", key=f"posponer_{mov[0]}"):
                                 st.info("Movimiento pospuesto")
