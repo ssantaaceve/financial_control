@@ -8,9 +8,10 @@ from movimientos import (
     obtener_movimientos_recurrentes,
     verificar_movimientos_pendientes,
     aprobar_movimiento_recurrente,
-    rechazar_movimiento_recurrente
+    rechazar_movimiento_recurrente,
+    obtener_historial_movimientos,
+    obtener_categorias_usuario
 )
-from db import actualizar_tabla_movimientos
 from datetime import datetime
 
 #En esta funcion se encuentra la pantalla principal del progra,a
@@ -76,7 +77,7 @@ def menu_principal(usuario):
         elif opcion == "3":
             ver_movimientos_recurrentes(usuario)
         elif opcion == "4":
-            print("Historial de movimientos (pendiente de implementar)")
+            ver_historial_movimientos(usuario)
         elif opcion == "5":
             print("👋 Hasta luego")
             break
@@ -360,11 +361,120 @@ def ver_movimientos_recurrentes(usuario):
     else:
         print("No hay movimientos recurrentes pendientes.")
 
+def ver_historial_movimientos(usuario):
+    print("\n=== Historial de Movimientos ===")
+    
+    # Obtener categorías disponibles
+    categorias = obtener_categorias_usuario(usuario['id'])
+    
+    # Inicializar filtros
+    filtros = {}
+    
+    # Menú de filtros
+    while True:
+        print("\nOpciones de filtro:")
+        print("1. Filtrar por tipo de movimiento")
+        print("2. Filtrar por rango de montos")
+        print("3. Filtrar por rango de fechas")
+        print("4. Filtrar por categoría")
+        print("5. Aplicar filtros y ver resultados")
+        print("6. Limpiar filtros")
+        print("7. Volver al menú principal")
+        
+        try:
+            opcion = int(input("\nSelecciona una opción (1-7): "))
+            
+            if opcion == 1:
+                print("\nSelecciona el tipo de movimiento:")
+                print("1. Ingresos")
+                print("2. Gastos")
+                print("3. Ambos")
+                tipo_opcion = int(input("Opción (1-3): "))
+                if tipo_opcion == 1:
+                    filtros['tipo'] = 'Ingreso'
+                elif tipo_opcion == 2:
+                    filtros['tipo'] = 'Gasto'
+                elif tipo_opcion == 3:
+                    filtros.pop('tipo', None)
+            
+            elif opcion == 2:
+                print("\nFiltrar por rango de montos:")
+                try:
+                    monto_min = float(input("Monto mínimo (dejar vacío para no filtrar): ") or 0)
+                    monto_max = float(input("Monto máximo (dejar vacío para no filtrar): ") or float('inf'))
+                    filtros['monto_min'] = monto_min
+                    filtros['monto_max'] = monto_max
+                except ValueError:
+                    print("❌ Por favor, ingresa montos válidos.")
+            
+            elif opcion == 3:
+                print("\nFiltrar por rango de fechas (YYYY-MM-DD):")
+                fecha_inicio = input("Fecha inicial (dejar vacío para no filtrar): ").strip()
+                fecha_fin = input("Fecha final (dejar vacío para no filtrar): ").strip()
+                
+                if fecha_inicio:
+                    try:
+                        datetime.strptime(fecha_inicio, '%Y-%m-%d')
+                        filtros['fecha_inicio'] = fecha_inicio
+                    except ValueError:
+                        print("❌ Formato de fecha inicial inválido.")
+                
+                if fecha_fin:
+                    try:
+                        datetime.strptime(fecha_fin, '%Y-%m-%d')
+                        filtros['fecha_fin'] = fecha_fin
+                    except ValueError:
+                        print("❌ Formato de fecha final inválido.")
+            
+            elif opcion == 4:
+                if categorias:
+                    print("\nCategorías disponibles:")
+                    for i, cat in enumerate(categorias, 1):
+                        print(f"{i}. {cat}")
+                    try:
+                        cat_opcion = int(input("\nSelecciona una categoría (0 para no filtrar): "))
+                        if 0 < cat_opcion <= len(categorias):
+                            filtros['categoria'] = categorias[cat_opcion - 1]
+                        elif cat_opcion == 0:
+                            filtros.pop('categoria', None)
+                    except ValueError:
+                        print("❌ Por favor, ingresa un número válido.")
+                else:
+                    print("No hay categorías disponibles.")
+            
+            elif opcion == 5:
+                # Mostrar movimientos con filtros actuales
+                movimientos = obtener_historial_movimientos(usuario['id'], filtros)
+                if movimientos:
+                    print("\n=== Resultados ===")
+                    print(f"Total de movimientos: {len(movimientos)}")
+                    print("\nDetalles:")
+                    for mov in movimientos:
+                        print(f"\nID: {mov[0]}")
+                        print(f"Fecha: {mov[1]}")
+                        print(f"Categoría: {mov[2]}")
+                        print(f"Monto: ${mov[3]:,.2f}")
+                        print(f"Tipo: {mov[4]}")
+                        print(f"Descripción: {mov[5]}")
+                        print("-" * 40)
+                else:
+                    print("\nNo se encontraron movimientos con los filtros actuales.")
+            
+            elif opcion == 6:
+                filtros = {}
+                print("\n✅ Filtros limpiados.")
+            
+            elif opcion == 7:
+                return
+            
+            else:
+                print("❌ Opción inválida. Intenta de nuevo.")
+        
+        except ValueError:
+            print("❌ Por favor, ingresa un número válido.")
+
 #Funcion principal  
 if __name__ == "__main__": 
-    # Actualizar la base de datos si es necesario
-    actualizar_tabla_movimientos()
-    
     usuario_logueado = pantalla_inicio()
     
     if usuario_logueado:

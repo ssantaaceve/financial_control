@@ -364,3 +364,93 @@ def verificar_movimientos_pendientes(autor_id):
             "total": 0,
             "movimientos": []
         }
+
+def obtener_historial_movimientos(autor_id, filtros=None):
+    """
+    Obtiene el historial de movimientos con filtros opcionales.
+    
+    Args:
+        autor_id: ID del usuario
+        filtros: Diccionario con filtros opcionales:
+            - tipo: 'Ingreso' o 'Gasto'
+            - monto_min: monto mínimo
+            - monto_max: monto máximo
+            - fecha_inicio: fecha inicial (YYYY-MM-DD)
+            - fecha_fin: fecha final (YYYY-MM-DD)
+            - categoria: categoría específica
+    """
+    try:
+        conexion = sqlite3.connect(DB_PATH)
+        cursor = conexion.cursor()
+
+        # Construir la consulta base
+        query = """
+            SELECT id, fecha, categoria, monto, tipo, descripcion
+            FROM movimientos
+            WHERE autor_id = ?
+            AND es_recurrente = 0
+        """
+        params = [autor_id]
+
+        # Agregar filtros si se proporcionan
+        if filtros:
+            if filtros.get('tipo'):
+                query += " AND tipo = ?"
+                params.append(filtros['tipo'])
+            
+            if filtros.get('monto_min') is not None:
+                query += " AND monto >= ?"
+                params.append(filtros['monto_min'])
+            
+            if filtros.get('monto_max') is not None:
+                query += " AND monto <= ?"
+                params.append(filtros['monto_max'])
+            
+            if filtros.get('fecha_inicio'):
+                query += " AND fecha >= ?"
+                params.append(filtros['fecha_inicio'])
+            
+            if filtros.get('fecha_fin'):
+                query += " AND fecha <= ?"
+                params.append(filtros['fecha_fin'])
+            
+            if filtros.get('categoria'):
+                query += " AND categoria = ?"
+                params.append(filtros['categoria'])
+
+        # Ordenar por fecha descendente
+        query += " ORDER BY fecha DESC"
+
+        cursor.execute(query, params)
+        movimientos = cursor.fetchall()
+        conexion.close()
+
+        return movimientos
+
+    except Exception as e:
+        print(f"❌ Error al obtener historial de movimientos: {e}")
+        return None
+
+def obtener_categorias_usuario(autor_id):
+    """
+    Obtiene todas las categorías únicas usadas por el usuario.
+    """
+    try:
+        conexion = sqlite3.connect(DB_PATH)
+        cursor = conexion.cursor()
+
+        cursor.execute("""
+            SELECT DISTINCT categoria
+            FROM movimientos
+            WHERE autor_id = ?
+            ORDER BY categoria
+        """, (autor_id,))
+        
+        categorias = [row[0] for row in cursor.fetchall()]
+        conexion.close()
+        
+        return categorias
+
+    except Exception as e:
+        print(f"❌ Error al obtener categorías: {e}")
+        return []
