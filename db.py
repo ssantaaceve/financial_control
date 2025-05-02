@@ -4,7 +4,7 @@ from datetime import datetime
 
 
 DB_PATH = os.path.join("data", "finanzas_parejas.db") #se define ruta para que pueda ser trabajada en diferentes sistemas operativos/ Se guarda la base de datos en mi carpeta ya creada. 
-'''
+#Funcion para crear tablas base de datos.
 def crear_tablas():
     conexion = sqlite3.connect(DB_PATH) #Abrimos la base de datos que creamos en la variable anterior
     cursor = conexion.cursor() # con este objeto podemos enviar los comando que vamos a escribir a SQL/. en este caso usamos un herramienta de conexion, con cursos podemos mandar comando SQL. 
@@ -51,8 +51,7 @@ def crear_tablas():
     conexion.commit() #guarda los cambios en el archivo .db.
     conexion.close() #  cierra la conexión.
     print("✅ Tablas creadas correctamente.")
-crear_tablas()'''
-'''
+
 #Comando para agregar o modificar campos en tabla base de datos
 def agregar_campos():
     conexion = sqlite3.connect(DB_PATH)
@@ -72,12 +71,7 @@ def agregar_campos():
 
     conexion.commit()
     conexion.close()
-
-agregar_campos()
-'''
-
-'''
-
+#Funcion para crear tablas especificas para el programa.
 def crear_tablas_especifico():
     conexion = sqlite3.connect(DB_PATH)  # Abrimos la base de datos
     cursor = conexion.cursor()  # Creamos el cursor para ejecutar comandos SQL
@@ -95,9 +89,8 @@ def crear_tablas_especifico():
     conexion.commit()
     conexion.close()
 
-crear_tablas_especifico()
-'''
 
+#Funcion para estandarizar los tipos de movimientos en la base de datos.
 def estandarizar_tipos_movimientos():
     """
     Estandariza los tipos de movimientos en la base de datos.
@@ -149,4 +142,3 @@ def estandarizar_tipos_movimientos():
             "estadisticas": None
         }
     
-estandarizar_tipos_movimientos()

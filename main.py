@@ -43,19 +43,19 @@ def menu_principal(usuario):
 
         print(f'\n=== Bienvenido {usuario["nombre"]} Menú Principal ===')
         print("1. Registrar movimiento")
-        print("2. Crear pareja")
-        print("3. Ver historial de movimientos")
-        print("4. Salir")
+        # print("2. Crear pareja")  # Funcionalidad temporalmente deshabilitada
+        print("2. Ver historial de movimientos")
+        print("3. Salir")
 
         opcion = input("Selecciona una opción: ")
 
         if opcion == "1":
-            registrar_movimiento(usuario)  # Esta es una funcion creada para registrar un movimiento
+            registrar_movimiento(usuario)
+        # elif opcion == "2":
+        #     pareja_creacion()  # Funcionalidad temporalmente deshabilitada
         elif opcion == "2":
-            pareja_creacion()  # Función para crear pareja
-        elif opcion == "3":
             print("Historial de movimientos (pendiente de implementar)")
-        elif opcion == "4":
+        elif opcion == "3":
             print("👋 Hasta luego")
             break
         else:
@@ -120,24 +120,6 @@ def menu_registro_usuarios():
             print("👋 Saliste de la creación de usuarios.")  # Mensaje de despedida
             pantalla_inicio()  # Volvemos al menú principal
             break  # Finalizamos el ciclo while
-#Función para realizar registro de pareja
-def pareja_creacion(): #Funcion para crear pareja
-
-    # Pregunta inicial para saber si el usuario quiere crear una pareja
-    validacion_1 = input("¿Te gustaría crear una pareja? (SI/NO): ").strip().lower()
-
-    # Validamos que la respuesta sea afirmativa
-    if validacion_1 == 'si':
-        # Solicitamos los datos necesarios para crear la pareja
-        nombre_pareja = input("Nombre de la pareja: ").strip()
-        correo_1 = input("Correo del primer usuario: ").strip()
-        correo_2 = input("Correo del segundo usuario: ").strip()
-
-        # Aquí llamamos la función que conecta con la base de datos
-        crear_pareja(nombre_pareja, correo_1, correo_2)
-
-    else:
-        print("❌ El usuario no quiso crear una pareja.")
 #Función para registrar movimientos en el app
 def registrar_movimiento(usuario):
     print("\n=== Registro de Movimiento ===")
