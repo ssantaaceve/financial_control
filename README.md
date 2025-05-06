@@ -125,3 +125,11 @@ tools🔧:
     - Python 
     - tkinter (grapich interfaz y ya incluida en python)
     - sqllite3(Base datos ya incluida en python)    
+
+
+
+Pasar a version portafolio 
+git checkout main
+
+Pasar a version de desarrollo 
+git checkout desarrollo
