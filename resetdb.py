@@ -20,7 +20,7 @@ def borrar_datos_db():
 
 if __name__ == "__main__":
     confirmar = input("¿Seguro que quieres borrar todos los datos? (sí/no): ").strip().lower()
-    if confirmar == "sí":
+    if confirmar == "si":
         borrar_datos_db()
         print("🧹 Base de datos limpiada.")
     else:
