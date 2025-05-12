@@ -477,7 +477,25 @@ def main():
 
     else:
         st.title("Bienvenido a Control Financiero")
-        st.write("Por favor, inicia sesión para acceder a tus finanzas.")
+
+        st.markdown("""
+        Esta app ha sido creada con el objetivo de ayudarte a tener un **control más claro y sencillo de tus finanzas personales y en pareja**.
+
+        🛠️ Actualmente, esta versión fue desarrollada usando:
+        - **Python**
+        - **Streamlit**
+        - **SQLite**
+
+        ### ¿Cómo funciona?
+        1. **Regístrate** con tus datos para crear tu cuenta.
+        2. Una vez registrado, **inicia sesión** con esos mismos datos.
+        3. Podrás registrar tus gastos, ingresos y visualizar resúmenes que te ayudarán a tomar mejores decisiones financieras.
+
+        🚧 Este proyecto está en **construcción activa**. Próximamente se incorporarán mejoras, incluyendo **funcionalidades con Inteligencia Artificial** para análisis y recomendaciones más personalizadas.
+
+        Tu feedback es bienvenido para seguir mejorando. ¡Gracias por ser parte del proceso!
+        """)
+
 
 if __name__ == "__main__":
     main()
