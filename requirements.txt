@@ -3,3 +3,4 @@ pandas
 plotly
 numpy
 supabase
+python-dotenv
