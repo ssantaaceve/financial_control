@@ -391,7 +391,7 @@ def main():
         🚧 Este proyecto está en **construcción activa**. Próximamente se incorporarán mejoras, incluyendo **funcionalidades con Inteligencia Artificial** para análisis y recomendaciones más personalizadas.
 
         Tu feedback es bienvenido para seguir mejorando. ¡Gracias por ser parte del proceso!
-        """)
+        """) 
 
 if __name__ == "__main__":
     main()
