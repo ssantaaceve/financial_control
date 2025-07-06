@@ -1,165 +1,153 @@
-import sqlite3
-import os
-import hashlib
+from supabase_config import get_supabase_client
 from datetime import datetime
+import hashlib
 
-DB_PATH = os.path.join("data", "finanzas_parejas.db")
-
-def registrar_usuario(nombre, correo, contraseña): # Creamos la funcion para registrar un usuario
-    try: #Forma de decir "intenta hacer algo"
-        conexion = sqlite3.connect(DB_PATH)
-        cursor = conexion.cursor()
-
-        cursor.execute(
-            "SELECT correo FROM usuarios WHERE correo = ?", (correo,))
-        resultado = cursor.fetchone() #busqueda si ya exite el correo
-
-        if resultado:
-            print("✅ Correo ya registrado. Intenta con otro correo.")
-            conexion.close()
-            return False  # Ya existe, no se registró
-        else:         
-            cursor.execute("""
-                INSERT INTO usuarios (nombre, correo, contraseña, fecha_creacion)
-                VALUES (?, ?, ?, CURRENT_TIMESTAMP);
-            """, (nombre, correo, contraseña))
-
-        conexion.commit()
-        conexion.close()
-        return True  # Registro exitoso
+def registrar_usuario(nombre, correo, contraseña):
+    """
+    Registra un nuevo usuario en Supabase.
+    Nota: En Supabase, los usuarios se crean a través del sistema de autenticación.
+    Esta función crea el perfil del usuario después del registro.
+    """
+    try:
+        supabase = get_supabase_client()
+        
+        # Crear usuario en el sistema de autenticación de Supabase
+        auth_response = supabase.auth.sign_up({
+            "email": correo,
+            "password": contraseña
+        })
+        
+        if auth_response.user:
+            # Crear perfil del usuario en la tabla usuarios
+            user_data = {
+                "id": auth_response.user.id,
+                "nombre": nombre,
+                "correo": correo
+            }
+            
+            response = supabase.table('usuarios').insert(user_data).execute()
+            
+            if response.data:
+                print("✅ Usuario registrado exitosamente.")
+                return True
+            else:
+                print("❌ Error al crear el perfil del usuario.")
+                return False
+        else:
+            print("❌ Error en el registro de autenticación.")
+            return False
+            
     except Exception as e:
-        print("❌ Error al registrar el usuario:", e)
-        return False  # Hubo un error, no se registró
+        print(f"❌ Error al registrar usuario: {e}")
+        return False
 
 def iniciar_sesion_db(correo, contraseña):
-    conexion = sqlite3.connect(DB_PATH)
-    cursor = conexion.cursor()
+    """
+    Inicia sesión usando el sistema de autenticación de Supabase.
+    """
+    try:
+        supabase = get_supabase_client()
+        
+        # Iniciar sesión
+        auth_response = supabase.auth.sign_in_with_password({
+            "email": correo,
+            "password": contraseña
+        })
+        
+        if auth_response.user:
+            # Obtener datos del usuario
+            user_data = obtener_datos_usuario(auth_response.user.id)
+            if user_data:
+                return {
+                    "id": auth_response.user.id,
+                    "nombre": user_data.get('nombre'),
+                    "correo": user_data.get('correo')
+                }
+        
+        return None
+        
+    except Exception as e:
+        print(f"❌ Error al iniciar sesión: {e}")
+        return None
 
-    # Comprobamos si el correo y la contraseña coinciden
-    cursor.execute("SELECT id, nombre FROM usuarios WHERE correo = ? AND contraseña = ?", (correo, contraseña))
-    resultado = cursor.fetchone()
-
-    conexion.close()
-
-    # Si existe el usuario, retornamos su id y nombre
-    if resultado:
-        return {"id": resultado[0], "nombre": resultado[1]}
-    else:
-        print("❌ Correo o contraseña incorrectos.")
+def obtener_datos_usuario(usuario_id):
+    """
+    Obtiene los datos de un usuario por su ID.
+    """
+    try:
+        supabase = get_supabase_client()
+        
+        response = supabase.table('usuarios').select('*').eq('id', usuario_id).execute()
+        
+        if response.data:
+            return response.data[0]
+        return None
+        
+    except Exception as e:
+        print(f"❌ Error al obtener datos del usuario: {e}")
         return None
 
 def actualizar_correo_usuario(usuario_id, nuevo_correo):
     """
     Actualiza el correo electrónico de un usuario.
-    
-    Args:
-        usuario_id: ID del usuario
-        nuevo_correo: Nuevo correo electrónico
-    
-    Returns:
-        bool: True si la actualización fue exitosa, False en caso contrario
     """
     try:
-        conexion = sqlite3.connect(DB_PATH)
-        cursor = conexion.cursor()
+        supabase = get_supabase_client()
         
         # Verificar si el correo ya existe
-        cursor.execute("SELECT id FROM usuarios WHERE correo = ? AND id != ?", (nuevo_correo, usuario_id))
-        if cursor.fetchone():
-            print("❌ Este correo electrónico ya está en uso.")
+        response = supabase.table('usuarios').select('id').eq('correo', nuevo_correo).execute()
+        if response.data:
+            print("❌ El correo electrónico ya está en uso.")
             return False
         
-        # Actualizar el correo
-        cursor.execute("UPDATE usuarios SET correo = ? WHERE id = ?", (nuevo_correo, usuario_id))
-        conexion.commit()
-        conexion.close()
-        return True
+        # Actualizar correo
+        response = supabase.table('usuarios').update({'correo': nuevo_correo}).eq('id', usuario_id).execute()
+        
+        if response.data:
+            print("✅ Correo electrónico actualizado exitosamente.")
+            return True
+        return False
+        
     except Exception as e:
-        print(f"❌ Error al actualizar el correo: {e}")
+        print(f"❌ Error al actualizar correo: {e}")
         return False
 
 def actualizar_contraseña_usuario(usuario_id, contraseña_actual, nueva_contraseña):
     """
     Actualiza la contraseña de un usuario.
-    
-    Args:
-        usuario_id: ID del usuario
-        contraseña_actual: Contraseña actual del usuario
-        nueva_contraseña: Nueva contraseña
-    
-    Returns:
-        bool: True si la actualización fue exitosa, False en caso contrario
+    Nota: En Supabase, esto se maneja a través del sistema de autenticación.
     """
     try:
-        conexion = sqlite3.connect(DB_PATH)
-        cursor = conexion.cursor()
+        supabase = get_supabase_client()
         
-        # Verificar la contraseña actual
-        cursor.execute("SELECT contraseña FROM usuarios WHERE id = ?", (usuario_id,))
-        resultado = cursor.fetchone()
+        # Actualizar contraseña en el sistema de autenticación
+        auth_response = supabase.auth.update_user({
+            "password": nueva_contraseña
+        })
         
-        if not resultado or resultado[0] != hashlib.sha256(contraseña_actual.encode()).hexdigest():
-            print("❌ Contraseña actual incorrecta.")
-            return False
+        if auth_response.user:
+            print("✅ Contraseña actualizada exitosamente.")
+            return True
+        return False
         
-        # Actualizar la contraseña
-        nueva_contraseña_hash = hashlib.sha256(nueva_contraseña.encode()).hexdigest()
-        cursor.execute("UPDATE usuarios SET contraseña = ? WHERE id = ?", (nueva_contraseña_hash, usuario_id))
-        conexion.commit()
-        conexion.close()
-        return True
     except Exception as e:
-        print(f"❌ Error al actualizar la contraseña: {e}")
+        print(f"❌ Error al actualizar contraseña: {e}")
         return False
 
 def actualizar_nombre_usuario(usuario_id, nuevo_nombre):
     """
     Actualiza el nombre de un usuario.
-    
-    Args:
-        usuario_id: ID del usuario
-        nuevo_nombre: Nuevo nombre del usuario
-    
-    Returns:
-        bool: True si la actualización fue exitosa, False en caso contrario
     """
     try:
-        conexion = sqlite3.connect(DB_PATH)
-        cursor = conexion.cursor()
+        supabase = get_supabase_client()
         
-        cursor.execute("UPDATE usuarios SET nombre = ? WHERE id = ?", (nuevo_nombre, usuario_id))
-        conexion.commit()
-        conexion.close()
-        return True
-    except Exception as e:
-        print(f"❌ Error al actualizar el nombre: {e}")
+        response = supabase.table('usuarios').update({'nombre': nuevo_nombre}).eq('id', usuario_id).execute()
+        
+        if response.data:
+            print("✅ Nombre actualizado exitosamente.")
+            return True
         return False
-
-def obtener_datos_usuario(usuario_id):
-    """
-    Obtiene los datos actuales del usuario.
-    
-    Args:
-        usuario_id: ID del usuario
-    
-    Returns:
-        dict: Diccionario con los datos del usuario o None si hay error
-    """
-    try:
-        conexion = sqlite3.connect(DB_PATH)
-        cursor = conexion.cursor()
         
-        cursor.execute("SELECT id, nombre, correo FROM usuarios WHERE id = ?", (usuario_id,))
-        resultado = cursor.fetchone()
-        conexion.close()
-        
-        if resultado:
-            return {
-                'id': resultado[0],
-                'nombre': resultado[1],
-                'correo': resultado[2]
-            }
-        return None
     except Exception as e:
-        print(f"❌ Error al obtener datos del usuario: {e}")
-        return None
+        print(f"❌ Error al actualizar nombre: {e}")
+        return False
