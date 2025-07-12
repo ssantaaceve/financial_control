@@ -1,0 +1,29 @@
+# Node (React frontend)
+frontend/node_modules/
+frontend/build/
+frontend/.env
+frontend/.DS_Store
+
+# Python (FastAPI backend)
+backend/venv/
+backend/__pycache__/
+backend/.env
+backend/.DS_Store
+
+# General
+.DS_Store
+.env
+*.pyc
+*.pyo
+*.pyd
+*.log
+
+# VSCode/IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# System
+Thumbs.db
+ehthumbs.db
