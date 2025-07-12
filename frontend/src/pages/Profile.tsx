@@ -82,7 +82,7 @@ const Profile: React.FC = () => {
           <h2 className="text-lg font-medium text-gray-900">Personal Information</h2>
           <button
             onClick={() => setShowEditForm(!showEditForm)}
-            className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+            className="inline-flex items-center px-3 py-2 border border-gray-300 rounded font-bold text-black bg-white hover:bg-gray-200 transition"
           >
             <PencilIcon className="h-4 w-4 mr-2" />
             {showEditForm ? 'Cancel' : 'Edit'}
@@ -133,14 +133,14 @@ const Profile: React.FC = () => {
                     });
                     setMessage(null);
                   }}
-                  className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+                  className="px-4 py-2 border border-gray-300 rounded font-bold text-black bg-white hover:bg-gray-200 transition"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
+                  className="px-4 py-2 border border-transparent rounded font-bold text-black bg-white hover:bg-gray-200 transition disabled:opacity-50"
                 >
                   {loading ? 'Saving...' : 'Save Changes'}
                 </button>
@@ -204,7 +204,7 @@ const Profile: React.FC = () => {
               </div>
               <button
                 onClick={logout}
-                className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+                className="inline-flex items-center px-4 py-2 border border-gray-300 rounded font-bold text-black bg-white hover:bg-gray-200 transition"
               >
                 Sign Out
               </button>

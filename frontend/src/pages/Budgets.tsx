@@ -135,7 +135,7 @@ const Budgets: React.FC = () => {
             setEditingBudget(null);
             resetForm();
           }}
-          className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
+          className="inline-flex items-center px-4 py-2 border border-transparent rounded font-bold text-black bg-white hover:bg-gray-200 transition"
         >
           <PlusIcon className="h-4 w-4 mr-2" />
           Add Budget
@@ -213,13 +213,13 @@ const Budgets: React.FC = () => {
                       setEditingBudget(null);
                       resetForm();
                     }}
-                    className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+                    className="px-4 py-2 border border-gray-300 rounded font-bold text-black bg-white hover:bg-gray-200 transition"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
+                    className="px-4 py-2 border border-transparent rounded font-bold text-black bg-white hover:bg-gray-200 transition"
                   >
                     {editingBudget ? 'Update' : 'Add'}
                   </button>
@@ -243,13 +243,13 @@ const Budgets: React.FC = () => {
                 <div className="flex space-x-2">
                   <button
                     onClick={() => handleEdit(budget)}
-                    className="text-gray-400 hover:text-gray-600"
+                    className="text-black hover:text-gray-600 bg-white rounded p-1 font-bold hover:bg-gray-200 transition"
                   >
                     <PencilIcon className="h-4 w-4" />
                   </button>
                   <button
                     onClick={() => handleDelete(budget.id)}
-                    className="text-gray-400 hover:text-red-600"
+                    className="text-black hover:text-red-600 bg-white rounded p-1 font-bold hover:bg-gray-200 transition"
                   >
                     <TrashIcon className="h-4 w-4" />
                   </button>

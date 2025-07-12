@@ -22,7 +22,7 @@ const AppContent: React.FC = () => {
   const { isAuthenticated } = useAuth();
 
   return (
-    <div className="App">
+    <div className="min-h-screen bg-main-bg font-mono text-white">
       {isAuthenticated && <Navbar />}
       <main className={isAuthenticated ? "main-content" : ""}>
         <Routes>
