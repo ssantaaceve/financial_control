@@ -1,0 +1,605 @@
+{
+	"info": {
+		"_postman_id": "financial-control-api",
+		"name": "Financial Control API",
+		"description": "Colección completa para probar la API de Control Financiero",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "🔐 Autenticación",
+			"item": [
+				{
+					"name": "Registrar Usuario",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"usuario@example.com\",\n    \"password\": \"Password123!\",\n    \"name\": \"Usuario de Prueba\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/auth/register",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"register"
+							]
+						}
+					}
+				},
+				{
+					"name": "Login Usuario",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"usuario@example.com\",\n    \"password\": \"Password123!\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/auth/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"login"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "👤 Usuario",
+			"item": [
+				{
+					"name": "Obtener Usuario Actual",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/users/me",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"me"
+							]
+						}
+					}
+				},
+				{
+					"name": "Actualizar Perfil",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Usuario Actualizado\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/users/me",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"me"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "💰 Movimientos",
+			"item": [
+				{
+					"name": "Crear Movimiento",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"amount\": 150.50,\n    \"category\": \"Comida\",\n    \"description\": \"Almuerzo en restaurante\",\n    \"movement_type\": \"Gasto\",\n    \"movement_date\": \"2025-07-11\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/movements",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"movements"
+							]
+						}
+					}
+				},
+				{
+					"name": "Obtener Movimientos",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/movements",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"movements"
+							]
+						}
+					}
+				},
+				{
+					"name": "Obtener Movimientos con Filtros",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/movements?movement_type=Gasto&category=Comida&date_from=2025-07-01&date_to=2025-07-31&amount_min=100&amount_max=200",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"movements"
+							],
+							"query": [
+								{
+									"key": "movement_type",
+									"value": "Gasto"
+								},
+								{
+									"key": "category",
+									"value": "Comida"
+								},
+								{
+									"key": "date_from",
+									"value": "2025-07-01"
+								},
+								{
+									"key": "date_to",
+									"value": "2025-07-31"
+								},
+								{
+									"key": "amount_min",
+									"value": "100"
+								},
+								{
+									"key": "amount_max",
+									"value": "200"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Obtener Movimiento por ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/movements/{{movement_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"movements",
+								"{{movement_id}}"
+							]
+						}
+					}
+				},
+				{
+					"name": "Actualizar Movimiento",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"amount\": 175.00,\n    \"description\": \"Almuerzo actualizado\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/movements/{{movement_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"movements",
+								"{{movement_id}}"
+							]
+						}
+					}
+				},
+				{
+					"name": "Eliminar Movimiento",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/movements/{{movement_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"movements",
+								"{{movement_id}}"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "📊 Presupuestos",
+			"item": [
+				{
+					"name": "Crear Presupuesto",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"category\": \"Comida\",\n    \"max_amount\": 500.00,\n    \"period\": \"mensual\",\n    \"start_date\": \"2025-07-01\",\n    \"end_date\": \"2025-07-31\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/budgets",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"budgets"
+							]
+						}
+					}
+				},
+				{
+					"name": "Obtener Presupuestos",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/budgets",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"budgets"
+							]
+						}
+					}
+				},
+				{
+					"name": "Obtener Presupuesto por ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/budgets/{{budget_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"budgets",
+								"{{budget_id}}"
+							]
+						}
+					}
+				},
+				{
+					"name": "Actualizar Presupuesto",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"max_amount\": 600.00\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/budgets/{{budget_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"budgets",
+								"{{budget_id}}"
+							]
+						}
+					}
+				},
+				{
+					"name": "Eliminar Presupuesto",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/budgets/{{budget_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"budgets",
+								"{{budget_id}}"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "📈 Reportes",
+			"item": [
+				{
+					"name": "Resumen Financiero",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/reports/financial-summary",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"reports",
+								"financial-summary"
+							]
+						}
+					}
+				},
+				{
+					"name": "Resumen Financiero con Fechas",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/reports/financial-summary?start_date=2025-07-01&end_date=2025-07-31",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"reports",
+								"financial-summary"
+							],
+							"query": [
+								{
+									"key": "start_date",
+									"value": "2025-07-01"
+								},
+								{
+									"key": "end_date",
+									"value": "2025-07-31"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Resumen de Presupuestos",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/reports/budget-summary",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"reports",
+								"budget-summary"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "🏥 Sistema",
+			"item": [
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/health",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"health"
+							]
+						}
+					}
+				},
+				{
+					"name": "Root Endpoint",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								""
+							]
+						}
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8001",
+			"type": "string"
+		},
+		{
+			"key": "auth_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "movement_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "budget_id",
+			"value": "",
+			"type": "string"
+		}
+	]
+} 
