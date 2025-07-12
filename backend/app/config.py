@@ -23,13 +23,14 @@ class Settings:
     
     # CORS
     CORS_ORIGINS: list = [
-        "http://localhost:3000",  # React dev server
-        "http://localhost:3001",  # React dev server (alternative port)
-        "http://localhost:8501",  # Streamlit (temporal)
+        "http://localhost:3000",
+        "http://localhost:3001",
+        "http://localhost:8501",
         "http://127.0.0.1:3000",
         "http://127.0.0.1:3001",
         "http://127.0.0.1:8501",
-        "https://financial-control-ruddy.vercel.app",  # Vercel frontend
+        "https://financial-control-ruddy.vercel.app",      # Producción
+        "https://financial-control-77zs24opw.vercel.app",  # Deploy actual
     ]
     
     # API
