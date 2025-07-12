@@ -29,8 +29,7 @@ class Settings:
         "http://127.0.0.1:3000",
         "http://127.0.0.1:3001",
         "http://127.0.0.1:8501",
-        "https://financial-control-frontend.vercel.app",  # Vercel frontend
-        "https://*.vercel.app",  # Any Vercel subdomain
+        "https://financial-control-ruddy.vercel.app",  # Vercel frontend
     ]
     
     # API
