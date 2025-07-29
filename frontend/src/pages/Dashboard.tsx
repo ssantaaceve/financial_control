@@ -100,16 +100,16 @@ const Dashboard: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white">Dashboard</h1>
-        <p className="mt-2 text-gray-300">Your financial overview</p>
+      <div className="mb-8 text-center">
+        <h1 className="text-4xl font-bold text-white mb-2">FINELIVE Dashboard</h1>
+        <p className="text-xl text-gray-300 mb-6">Tu resumen financiero personal</p>
         
         {/* Date Range Selector */}
-        <div className="mt-4 flex items-center space-x-4">
-          <div className="inline-flex items-center px-4 py-2 bg-blue-100 text-blue-800 rounded-lg">
+        <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-6">
+          <div className="inline-flex items-center px-4 py-2 bg-card-bg border border-border-color text-text-color rounded-lg">
             <CalendarIcon className="h-5 w-5 mr-2" />
             <span className="font-medium">
-              Period: {formatDate(dateRange.startDate)} - {formatDate(dateRange.endDate)}
+              Período: {formatDate(dateRange.startDate)} - {formatDate(dateRange.endDate)}
             </span>
             {dateLoading && (
               <div className="ml-2 w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
@@ -117,24 +117,24 @@ const Dashboard: React.FC = () => {
           </div>
           
           {/* Date Range Inputs */}
-          <div className="flex items-center space-x-3">
+          <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-4">
             <div className="flex items-center space-x-2">
-              <label className="text-sm font-medium text-white">From:</label>
+              <label className="text-sm font-medium text-text-color">Desde:</label>
               <input
                 type="date"
                 value={dateRange.startDate}
                 onChange={(e) => handleDateChange('startDate', e.target.value)}
-                className="border border-gray-300 rounded-lg px-3 py-2 text-sm text-black focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="border border-border-color rounded-lg px-3 py-2 text-sm text-text-color bg-card-bg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
             
             <div className="flex items-center space-x-2">
-              <label className="text-sm font-medium text-white">To:</label>
+              <label className="text-sm font-medium text-text-color">Hasta:</label>
               <input
                 type="date"
                 value={dateRange.endDate}
                 onChange={(e) => handleDateChange('endDate', e.target.value)}
-                className="border border-gray-300 rounded-lg px-3 py-2 text-sm text-black focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="border border-border-color rounded-lg px-3 py-2 text-sm text-text-color bg-card-bg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
           </div>
@@ -145,42 +145,42 @@ const Dashboard: React.FC = () => {
       <div className={`grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 transition-opacity duration-300 ${dateLoading ? 'opacity-50' : 'opacity-100'}`}>
         {summary && (
           <>
-            <div className="bg-white rounded-lg shadow p-6">
+            <div className="bg-card-bg border border-border-color rounded-lg shadow-lg p-6">
               <div className="flex items-center">
                 <div className="flex-shrink-0">
-                  <BanknotesIcon className="h-8 w-8 text-green-600" />
+                  <BanknotesIcon className="h-8 w-8 text-green-500" />
                 </div>
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-500">Total Balance</p>
-                  <p className="text-2xl font-bold text-gray-900">
+                  <p className="text-sm font-medium text-text-color opacity-70">Balance Total</p>
+                  <p className="text-2xl font-bold text-text-color">
                     {formatCurrency(summary.balance)}
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow p-6">
+            <div className="bg-card-bg border border-border-color rounded-lg shadow-lg p-6">
               <div className="flex items-center">
                 <div className="flex-shrink-0">
-                  <ArrowUpIcon className="h-8 w-8 text-green-600" />
+                  <ArrowUpIcon className="h-8 w-8 text-green-500" />
                 </div>
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-500">Total Income</p>
-                  <p className="text-2xl font-bold text-green-600">
+                  <p className="text-sm font-medium text-text-color opacity-70">Ingresos Totales</p>
+                  <p className="text-2xl font-bold text-green-500">
                     {formatCurrency(summary.total_income)}
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow p-6">
+            <div className="bg-card-bg border border-border-color rounded-lg shadow-lg p-6">
               <div className="flex items-center">
                 <div className="flex-shrink-0">
-                  <ArrowDownIcon className="h-8 w-8 text-red-600" />
+                  <ArrowDownIcon className="h-8 w-8 text-red-500" />
                 </div>
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-500">Total Expenses</p>
-                  <p className="text-2xl font-bold text-red-600">
+                  <p className="text-sm font-medium text-text-color opacity-70">Gastos Totales</p>
+                  <p className="text-2xl font-bold text-red-500">
                     {formatCurrency(summary.total_expenses)}
                   </p>
                 </div>
@@ -191,42 +191,42 @@ const Dashboard: React.FC = () => {
       </div>
 
       {/* Quick Actions */}
-      <div className="bg-white rounded-lg shadow mb-8">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h2 className="text-lg font-medium text-gray-900">Quick Actions</h2>
+      <div className="bg-card-bg border border-border-color rounded-lg shadow-lg mb-8">
+        <div className="px-6 py-4 border-b border-border-color">
+          <h2 className="text-lg font-medium text-text-color">Acciones Rápidas</h2>
         </div>
         <div className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <button
               onClick={() => setIsModalOpen(true)}
-              className="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-left"
+              className="flex items-center p-4 border border-border-color rounded-lg hover:bg-card-bg transition-colors text-left"
             >
-              <PlusIcon className="h-6 w-6 text-blue-600 mr-3" />
+              <PlusIcon className="h-6 w-6 text-blue-500 mr-3" />
               <div>
-                <p className="font-medium text-gray-900">Add Movement</p>
-                <p className="text-sm text-gray-500">Record income or expense</p>
+                <p className="font-medium text-text-color">Agregar Movimiento</p>
+                <p className="text-sm text-text-color opacity-70">Registrar ingreso o gasto</p>
               </div>
             </button>
 
             <Link
               to="/budgets"
-              className="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+              className="flex items-center p-4 border border-border-color rounded-lg hover:bg-card-bg transition-colors"
             >
-              <ChartBarIcon className="h-6 w-6 text-green-600 mr-3" />
+              <ChartBarIcon className="h-6 w-6 text-green-500 mr-3" />
               <div>
-                <p className="font-medium text-gray-900">Manage Budgets</p>
-                <p className="text-sm text-gray-500">Set and track budgets</p>
+                <p className="font-medium text-text-color">Gestionar Presupuestos</p>
+                <p className="text-sm text-text-color opacity-70">Configurar y seguir presupuestos</p>
               </div>
             </Link>
 
             <Link
               to="/reports"
-              className="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+              className="flex items-center p-4 border border-border-color rounded-lg hover:bg-card-bg transition-colors"
             >
-              <CalendarIcon className="h-6 w-6 text-purple-600 mr-3" />
+              <CalendarIcon className="h-6 w-6 text-purple-500 mr-3" />
               <div>
-                <p className="font-medium text-gray-900">View Reports</p>
-                <p className="text-sm text-gray-500">Analyze your finances</p>
+                <p className="font-medium text-text-color">Ver Reportes</p>
+                <p className="text-sm text-text-color opacity-70">Analizar tus finanzas</p>
               </div>
             </Link>
           </div>
@@ -234,9 +234,9 @@ const Dashboard: React.FC = () => {
       </div>
 
       {/* Recent Movements */}
-      <div className="bg-white rounded-lg shadow">
-        <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-          <h2 className="text-lg font-medium text-gray-900">Recent Movements</h2>
+      <div className="bg-card-bg border border-border-color rounded-lg shadow-lg">
+        <div className="px-6 py-4 border-b border-border-color flex justify-between items-center">
+          <h2 className="text-lg font-medium text-text-color">Movimientos Recientes</h2>
           <Link
             to="/movements"
             className="text-blue-600 hover:text-blue-800 text-sm font-medium"

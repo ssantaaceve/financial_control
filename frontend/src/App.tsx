@@ -1,8 +1,9 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { AuthProvider } from './contexts/AuthContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import Sidebar from './components/Sidebar';
-import Landing from './pages/Landing';
+import ThemeToggle from './components/ThemeToggle';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
@@ -10,80 +11,85 @@ import Movements from './pages/Movements';
 import Budgets from './pages/Budgets';
 import Reports from './pages/Reports';
 import Profile from './pages/Profile';
+import PrivateRoute from './components/PrivateRoute';
 
-// Protected Route Component
-const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { isAuthenticated } = useAuth();
-  return isAuthenticated ? <>{children}</> : <Navigate to="/login" replace />;
-};
-
-// Main App Content
-const AppContent: React.FC = () => {
-  const { isAuthenticated } = useAuth();
-
+const App: React.FC = () => {
   return (
-    <div className="min-h-screen bg-main-bg font-mono text-white">
-      {isAuthenticated && <Sidebar />}
-      <main className={isAuthenticated ? "ml-16" : ""}>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route 
-            path="/" 
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/movements" 
-            element={
-              <ProtectedRoute>
-                <Movements />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/budgets" 
-            element={
-              <ProtectedRoute>
-                <Budgets />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/reports" 
-            element={
-              <ProtectedRoute>
-                <Reports />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/profile" 
-            element={
-              <ProtectedRoute>
-                <Profile />
-              </ProtectedRoute>
-            } 
-          />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </main>
-    </div>
+    <ThemeProvider>
+      <AuthProvider>
+        <Router>
+          <div className="App">
+            <ThemeToggle />
+            <Routes>
+              {/* Rutas públicas */}
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              
+              {/* Rutas privadas */}
+              <Route path="/dashboard" element={
+                <PrivateRoute>
+                  <div className="flex">
+                    <Sidebar />
+                    <main className="main-content">
+                      <Dashboard />
+                    </main>
+                  </div>
+                </PrivateRoute>
+              } />
+              
+              <Route path="/movements" element={
+                <PrivateRoute>
+                  <div className="flex">
+                    <Sidebar />
+                    <main className="main-content">
+                      <Movements />
+                    </main>
+                  </div>
+                </PrivateRoute>
+              } />
+              
+              <Route path="/budgets" element={
+                <PrivateRoute>
+                  <div className="flex">
+                    <Sidebar />
+                    <main className="main-content">
+                      <Budgets />
+                    </main>
+                  </div>
+                </PrivateRoute>
+              } />
+              
+              <Route path="/reports" element={
+                <PrivateRoute>
+                  <div className="flex">
+                    <Sidebar />
+                    <main className="main-content">
+                      <Reports />
+                    </main>
+                  </div>
+                </PrivateRoute>
+              } />
+              
+              <Route path="/profile" element={
+                <PrivateRoute>
+                  <div className="flex">
+                    <Sidebar />
+                    <main className="main-content">
+                      <Profile />
+                    </main>
+                  </div>
+                </PrivateRoute>
+              } />
+              
+              {/* Redirección por defecto */}
+              <Route path="/" element={<Navigate to="/dashboard" replace />} />
+              <Route path="*" element={<Navigate to="/dashboard" replace />} />
+            </Routes>
+          </div>
+        </Router>
+      </AuthProvider>
+    </ThemeProvider>
   );
 };
-
-// Main App Component
-function App() {
-  return (
-    <AuthProvider>
-      <Router>
-        <AppContent />
-      </Router>
-    </AuthProvider>
-  );
-}
 
 export default App;

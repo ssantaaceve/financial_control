@@ -16,10 +16,10 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({ children, title, subtitle }) =>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <Link to="/" className="flex items-center space-x-3 group">
-              <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300">
-                <ChartBarIcon className="w-6 h-6 text-main-bg" />
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300" style={{ backgroundColor: '#d9ed92' }}>
+                <span className="text-gray-800 font-bold text-sm">FL</span>
               </div>
-              <span className="text-xl font-bold text-white group-hover:text-gray-200 transition-colors">FinanceFlow</span>
+              <span className="text-xl font-bold text-white group-hover:text-gray-200 transition-colors">FINELIVE</span>
             </Link>
           </div>
         </div>
@@ -42,7 +42,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({ children, title, subtitle }) =>
           {/* Footer */}
           <div className="text-center mt-8">
             <p className="text-gray-400 text-sm">
-              © 2024 FinanceFlow. All rights reserved.
+              © 2024 FINELIVE. All rights reserved.
             </p>
           </div>
         </div>
