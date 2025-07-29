@@ -30,7 +30,8 @@ class Settings:
         "http://127.0.0.1:3001",
         "http://127.0.0.1:8501",
         "https://financial-control-ruddy.vercel.app",      # Producción
-        "https://financial-control-77zs24opw.vercel.app",  # Deploy actual
+        "https://financial-control-77zs24opw.vercel.app",  # Deploy anterior
+        "https://financial-cont-git-462a98-sergio-andres-santa-acevedos-projects.vercel.app",  # Preview actual
     ]
     
     # API
