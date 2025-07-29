@@ -43,6 +43,14 @@ const Dashboard: React.FC = () => {
     }).format(amount);
   };
 
+  const getCurrentMonth = () => {
+    const now = new Date();
+    return now.toLocaleDateString('en-US', { 
+      month: 'long', 
+      year: 'numeric' 
+    });
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -57,6 +65,10 @@ const Dashboard: React.FC = () => {
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
         <p className="mt-2 text-gray-600">Your financial overview</p>
+        <div className="mt-4 inline-flex items-center px-4 py-2 bg-blue-100 text-blue-800 rounded-lg">
+          <CalendarIcon className="h-5 w-5 mr-2" />
+          <span className="font-medium">Current Period: {getCurrentMonth()}</span>
+        </div>
       </div>
 
       {/* Financial Summary Cards */}

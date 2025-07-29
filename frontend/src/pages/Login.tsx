@@ -46,7 +46,7 @@ const Login: React.FC = () => {
         )}
 
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="email" className="block text-sm font-medium text-white mb-2">
             Email address
           </label>
           <div className="relative">
@@ -59,14 +59,14 @@ const Login: React.FC = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-500 text-black focus:outline-none focus:ring-blue-500 focus:border-blue-500"
               placeholder="Enter your email"
             />
           </div>
         </div>
 
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="password" className="block text-sm font-medium text-white mb-2">
             Password
           </label>
           <div className="relative">
@@ -79,13 +79,13 @@ const Login: React.FC = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="block w-full pl-10 pr-12 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className="block w-full pl-10 pr-12 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-500 text-black focus:outline-none focus:ring-blue-500 focus:border-blue-500"
               placeholder="Enter your password"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute inset-y-0 right-0 pr-3 flex items-center"
+              className="absolute inset-y-0 right-0 pr-3 flex items-center bg-white text-black font-bold rounded hover:bg-gray-200 transition"
             >
               {showPassword ? (
                 <EyeSlashIcon className="h-5 w-5 text-gray-400 hover:text-gray-600" />
@@ -104,13 +104,13 @@ const Login: React.FC = () => {
               type="checkbox"
               className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
             />
-            <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
+            <label htmlFor="remember-me" className="ml-2 block text-sm text-white">
               Remember me
             </label>
           </div>
           <Link
             to="/forgot-password"
-            className="text-sm text-blue-600 hover:text-blue-500"
+            className="text-sm text-blue-300 hover:text-blue-200"
           >
             Forgot password?
           </Link>
@@ -119,21 +119,21 @@ const Login: React.FC = () => {
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full flex justify-center py-2 px-4 border border-transparent rounded font-bold text-black bg-white hover:bg-gray-200 transition disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isLoading ? (
-            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+            <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
           ) : (
             'Sign in'
           )}
         </button>
 
         <div className="text-center">
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-white">
             Don't have an account?{' '}
             <Link
               to="/register"
-              className="font-medium text-blue-600 hover:text-blue-500"
+              className="font-medium text-blue-300 hover:text-blue-200"
             >
               Sign up for free
             </Link>
