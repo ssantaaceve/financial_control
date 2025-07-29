@@ -57,9 +57,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       } else {
         throw new Error(response.message || 'Error en el login');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error en login:', error);
-      throw error;
+      
+      // Manejar errores específicos de Axios
+      if (error.response) {
+        // El servidor respondió con un código de estado fuera del rango 2xx
+        const errorMessage = error.response.data?.detail || error.response.data?.message || 'Error del servidor';
+        throw new Error(errorMessage);
+      } else if (error.request) {
+        // La petición fue hecha pero no se recibió respuesta
+        throw new Error('No se pudo conectar con el servidor. Verifica tu conexión a internet.');
+      } else {
+        // Algo más causó el error
+        throw new Error(error.message || 'Error inesperado durante el login');
+      }
     }
   };
 
@@ -78,9 +90,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       } else {
         throw new Error(response.message || 'Error en el registro');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error en registro:', error);
-      throw error;
+      
+      // Manejar errores específicos de Axios
+      if (error.response) {
+        // El servidor respondió con un código de estado fuera del rango 2xx
+        const errorMessage = error.response.data?.detail || error.response.data?.message || 'Error del servidor';
+        throw new Error(errorMessage);
+      } else if (error.request) {
+        // La petición fue hecha pero no se recibió respuesta
+        throw new Error('No se pudo conectar con el servidor. Verifica tu conexión a internet.');
+      } else {
+        // Algo más causó el error
+        throw new Error(error.message || 'Error inesperado durante el registro');
+      }
     }
   };
 
@@ -110,7 +134,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth debe ser usado dentro de un AuthProvider');
+    throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
 }; 

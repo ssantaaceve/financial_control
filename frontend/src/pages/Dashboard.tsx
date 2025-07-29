@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   PlusIcon, 
@@ -10,37 +10,83 @@ import {
 } from '@heroicons/react/24/outline';
 import { Movement, FinancialSummary, MovementType } from '../types';
 import { apiService } from '../services/api';
+import AddMovementModal from '../components/AddMovementModal';
 
 const Dashboard: React.FC = () => {
   const [summary, setSummary] = useState<FinancialSummary | null>(null);
   const [recentMovements, setRecentMovements] = useState<Movement[]>([]);
   const [loading, setLoading] = useState(true);
+  const [dateLoading, setDateLoading] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [dateRange, setDateRange] = useState({
+    startDate: new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0], // Primer día del mes actual
+    endDate: new Date().toISOString().split('T')[0] // Hoy
+  });
 
+  // Función para obtener datos con debounce
+  const fetchDashboardData = useCallback(async (startDate: string, endDate: string) => {
+    try {
+      setDateLoading(true);
+      const [summaryData, movementsData] = await Promise.all([
+        apiService.getFinancialSummary(startDate, endDate),
+        apiService.getMovements()
+      ]);
+      setSummary(summaryData.data || null);
+      setRecentMovements((movementsData.data || []).slice(0, 5));
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error);
+    } finally {
+      setDateLoading(false);
+    }
+  }, []);
+
+  // Carga inicial
   useEffect(() => {
-    const fetchDashboardData = async () => {
+    const loadInitialData = async () => {
       try {
         setLoading(true);
-        const [summaryData, movementsData] = await Promise.all([
-          apiService.getFinancialSummary(),
-          apiService.getMovements()
-        ]);
-        setSummary(summaryData.data || null);
-        setRecentMovements((movementsData.data || []).slice(0, 5));
-      } catch (error) {
-        console.error('Error fetching dashboard data:', error);
+        await fetchDashboardData(dateRange.startDate, dateRange.endDate);
       } finally {
         setLoading(false);
       }
     };
+    loadInitialData();
+  }, []); // Solo se ejecuta una vez al montar el componente
 
-    fetchDashboardData();
-  }, []);
+  // Debounce para cambios de fecha
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      fetchDashboardData(dateRange.startDate, dateRange.endDate);
+    }, 500); // Espera 500ms después del último cambio
+
+    return () => clearTimeout(timeoutId);
+  }, [dateRange, fetchDashboardData]);
+
+  const handleMovementAdded = () => {
+    // Recargar datos después de agregar un movimiento
+    fetchDashboardData(dateRange.startDate, dateRange.endDate);
+  };
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD'
     }).format(amount);
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    });
+  };
+
+  const handleDateChange = (field: 'startDate' | 'endDate', value: string) => {
+    setDateRange(prev => ({
+      ...prev,
+      [field]: value
+    }));
   };
 
   if (loading) {
@@ -55,56 +101,94 @@ const Dashboard: React.FC = () => {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-        <p className="mt-2 text-gray-600">Your financial overview</p>
-      </div>
-
-      {/* Financial Summary Cards */}
-      {summary && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <BanknotesIcon className="h-8 w-8 text-green-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-500">Total Balance</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {formatCurrency(summary.balance)}
-                </p>
-              </div>
-            </div>
+        <h1 className="text-3xl font-bold text-white">Dashboard</h1>
+        <p className="mt-2 text-gray-300">Your financial overview</p>
+        
+        {/* Date Range Selector */}
+        <div className="mt-4 flex items-center space-x-4">
+          <div className="inline-flex items-center px-4 py-2 bg-blue-100 text-blue-800 rounded-lg">
+            <CalendarIcon className="h-5 w-5 mr-2" />
+            <span className="font-medium">
+              Period: {formatDate(dateRange.startDate)} - {formatDate(dateRange.endDate)}
+            </span>
+            {dateLoading && (
+              <div className="ml-2 w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+            )}
           </div>
-
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <ArrowUpIcon className="h-8 w-8 text-green-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-500">Total Income</p>
-                <p className="text-2xl font-bold text-green-600">
-                  {formatCurrency(summary.total_income)}
-                </p>
-              </div>
+          
+          {/* Date Range Inputs */}
+          <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-2">
+              <label className="text-sm font-medium text-white">From:</label>
+              <input
+                type="date"
+                value={dateRange.startDate}
+                onChange={(e) => handleDateChange('startDate', e.target.value)}
+                className="border border-gray-300 rounded-lg px-3 py-2 text-sm text-black focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
             </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <ArrowDownIcon className="h-8 w-8 text-red-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-500">Total Expenses</p>
-                <p className="text-2xl font-bold text-red-600">
-                  {formatCurrency(summary.total_expenses)}
-                </p>
-              </div>
+            
+            <div className="flex items-center space-x-2">
+              <label className="text-sm font-medium text-white">To:</label>
+              <input
+                type="date"
+                value={dateRange.endDate}
+                onChange={(e) => handleDateChange('endDate', e.target.value)}
+                className="border border-gray-300 rounded-lg px-3 py-2 text-sm text-black focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
             </div>
           </div>
         </div>
-      )}
+      </div>
+
+      {/* Financial Summary Cards */}
+      <div className={`grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 transition-opacity duration-300 ${dateLoading ? 'opacity-50' : 'opacity-100'}`}>
+        {summary && (
+          <>
+            <div className="bg-white rounded-lg shadow p-6">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <BanknotesIcon className="h-8 w-8 text-green-600" />
+                </div>
+                <div className="ml-4">
+                  <p className="text-sm font-medium text-gray-500">Total Balance</p>
+                  <p className="text-2xl font-bold text-gray-900">
+                    {formatCurrency(summary.balance)}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg shadow p-6">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <ArrowUpIcon className="h-8 w-8 text-green-600" />
+                </div>
+                <div className="ml-4">
+                  <p className="text-sm font-medium text-gray-500">Total Income</p>
+                  <p className="text-2xl font-bold text-green-600">
+                    {formatCurrency(summary.total_income)}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg shadow p-6">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <ArrowDownIcon className="h-8 w-8 text-red-600" />
+                </div>
+                <div className="ml-4">
+                  <p className="text-sm font-medium text-gray-500">Total Expenses</p>
+                  <p className="text-2xl font-bold text-red-600">
+                    {formatCurrency(summary.total_expenses)}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+      </div>
 
       {/* Quick Actions */}
       <div className="bg-white rounded-lg shadow mb-8">
@@ -113,16 +197,16 @@ const Dashboard: React.FC = () => {
         </div>
         <div className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Link
-              to="/movements"
-              className="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-left"
             >
               <PlusIcon className="h-6 w-6 text-blue-600 mr-3" />
               <div>
                 <p className="font-medium text-gray-900">Add Movement</p>
                 <p className="text-sm text-gray-500">Record income or expense</p>
               </div>
-            </Link>
+            </button>
 
             <Link
               to="/budgets"
@@ -191,17 +275,24 @@ const Dashboard: React.FC = () => {
           ) : (
             <div className="px-6 py-8 text-center">
               <p className="text-gray-500">No movements yet. Add your first movement to get started!</p>
-              <Link
-                to="/movements"
+              <button
+                onClick={() => setIsModalOpen(true)}
                 className="mt-2 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
               >
                 <PlusIcon className="h-4 w-4 mr-2" />
                 Add Movement
-              </Link>
+              </button>
             </div>
           )}
         </div>
       </div>
+
+      {/* Add Movement Modal */}
+      <AddMovementModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onMovementAdded={handleMovementAdded}
+      />
     </div>
   );
 };

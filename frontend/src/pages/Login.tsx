@@ -40,18 +40,18 @@ const Login: React.FC = () => {
     >
       <form onSubmit={handleSubmit} className="space-y-6">
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-md p-3">
-            <p className="text-red-600 text-sm">{error}</p>
+          <div className="bg-red-50 border border-red-200 rounded-xl p-4 animate-pulse">
+            <p className="text-red-600 text-sm font-medium">{error}</p>
           </div>
         )}
 
-        <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+        <div className="space-y-2">
+          <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
             Email address
           </label>
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <EnvelopeIcon className="h-5 w-5 text-gray-400" />
+          <div className="relative group">
+            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+              <EnvelopeIcon className="h-5 w-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
             </div>
             <input
               id="email"
@@ -59,19 +59,19 @@ const Login: React.FC = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className="block w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl shadow-sm placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white/80 backdrop-blur-sm"
               placeholder="Enter your email"
             />
           </div>
         </div>
 
-        <div>
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+        <div className="space-y-2">
+          <label htmlFor="password" className="block text-sm font-semibold text-gray-700 mb-2">
             Password
           </label>
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <LockClosedIcon className="h-5 w-5 text-gray-400" />
+          <div className="relative group">
+            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+              <LockClosedIcon className="h-5 w-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
             </div>
             <input
               id="password"
@@ -79,18 +79,18 @@ const Login: React.FC = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="block w-full pl-10 pr-12 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className="block w-full pl-12 pr-12 py-3 border border-gray-300 rounded-xl shadow-sm placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white/80 backdrop-blur-sm"
               placeholder="Enter your password"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute inset-y-0 right-0 pr-3 flex items-center"
+              className="absolute inset-y-0 right-0 pr-4 flex items-center hover:bg-gray-50 rounded-r-xl transition-colors"
             >
               {showPassword ? (
-                <EyeSlashIcon className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                <EyeSlashIcon className="h-5 w-5 text-gray-400 hover:text-gray-600 transition-colors" />
               ) : (
-                <EyeIcon className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                <EyeIcon className="h-5 w-5 text-gray-400 hover:text-gray-600 transition-colors" />
               )}
             </button>
           </div>
@@ -102,15 +102,15 @@ const Login: React.FC = () => {
               id="remember-me"
               name="remember-me"
               type="checkbox"
-              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded transition-colors"
             />
-            <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
+            <label htmlFor="remember-me" className="ml-3 block text-sm text-gray-600 font-medium">
               Remember me
             </label>
           </div>
           <Link
             to="/forgot-password"
-            className="text-sm text-blue-600 hover:text-blue-500"
+            className="text-sm font-medium text-blue-600 hover:text-blue-500 transition-colors"
           >
             Forgot password?
           </Link>
@@ -119,7 +119,7 @@ const Login: React.FC = () => {
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl font-bold text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
         >
           {isLoading ? (
             <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -128,12 +128,12 @@ const Login: React.FC = () => {
           )}
         </button>
 
-        <div className="text-center">
+        <div className="text-center pt-4">
           <p className="text-sm text-gray-600">
             Don't have an account?{' '}
             <Link
               to="/register"
-              className="font-medium text-blue-600 hover:text-blue-500"
+              className="font-semibold text-blue-600 hover:text-blue-500 transition-colors"
             >
               Sign up for free
             </Link>

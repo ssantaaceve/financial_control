@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
-import Navbar from './components/Navbar';
+import Sidebar from './components/Sidebar';
 import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -22,9 +22,9 @@ const AppContent: React.FC = () => {
   const { isAuthenticated } = useAuth();
 
   return (
-    <div className="App">
-      {isAuthenticated && <Navbar />}
-      <main className={isAuthenticated ? "main-content" : ""}>
+    <div className="min-h-screen bg-main-bg font-mono text-white">
+      {isAuthenticated && <Sidebar />}
+      <main className={isAuthenticated ? "ml-16" : ""}>
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />

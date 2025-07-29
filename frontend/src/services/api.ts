@@ -14,7 +14,9 @@ import {
   FinancialSummary,
   BudgetSummary,
   ApiResponse,
-  AuthResponse
+  AuthResponse,
+  Category,
+  MovementType
 } from '../types';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8001';
@@ -60,8 +62,19 @@ class ApiService {
 
   // Métodos de autenticación
   async register(userData: UserCreate): Promise<AuthResponse> {
-    const response: AxiosResponse<AuthResponse> = await this.api.post('/auth/register', userData);
-    return response.data;
+    console.log('🔍 Register API call:', {
+      url: `${this.api.defaults.baseURL}/auth/register`,
+      data: userData
+    });
+    
+    try {
+      const response: AxiosResponse<AuthResponse> = await this.api.post('/auth/register', userData);
+      console.log('✅ Register response:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('❌ Register error:', error);
+      throw error;
+    }
   }
 
   async login(credentials: UserLogin): Promise<AuthResponse> {
@@ -94,7 +107,7 @@ class ApiService {
         }
       });
     }
-    
+
     const response: AxiosResponse<ApiResponse<Movement[]>> = await this.api.get(`/movements?${params.toString()}`);
     return response.data;
   }
@@ -145,13 +158,29 @@ class ApiService {
     const params = new URLSearchParams();
     if (startDate) params.append('start_date', startDate);
     if (endDate) params.append('end_date', endDate);
-    
+
     const response: AxiosResponse<ApiResponse<FinancialSummary>> = await this.api.get(`/reports/financial-summary?${params.toString()}`);
     return response.data;
   }
 
   async getBudgetSummary(): Promise<ApiResponse<BudgetSummary>> {
     const response: AxiosResponse<ApiResponse<BudgetSummary>> = await this.api.get('/reports/budget-summary');
+    return response.data;
+  }
+
+  // Métodos de categorías
+  async getCategories(type?: MovementType): Promise<ApiResponse<Category[]>> {
+    const params = new URLSearchParams();
+    if (type) {
+      params.append('type', type);
+    }
+
+    const response: AxiosResponse<ApiResponse<Category[]>> = await this.api.get(`/categories?${params.toString()}`);
+    return response.data;
+  }
+
+  async createCategory(categoryData: { name: string; type: MovementType; icon?: string; color?: string }): Promise<ApiResponse<Category>> {
+    const response: AxiosResponse<ApiResponse<Category>> = await this.api.post('/categories', categoryData);
     return response.data;
   }
 

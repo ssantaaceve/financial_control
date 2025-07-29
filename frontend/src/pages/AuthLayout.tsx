@@ -10,16 +10,16 @@ interface AuthLayoutProps {
 
 const AuthLayout: React.FC<AuthLayoutProps> = ({ children, title, subtitle }) => {
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-main-bg flex flex-col">
       {/* Navigation */}
-      <nav className="bg-white shadow-sm border-b">
+      <nav className="bg-white/10 backdrop-blur-sm border-b border-white/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <Link to="/" className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                <ChartBarIcon className="w-5 h-5 text-white" />
+            <Link to="/" className="flex items-center space-x-3 group">
+              <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300">
+                <ChartBarIcon className="w-6 h-6 text-main-bg" />
               </div>
-              <span className="text-xl font-bold text-gray-900">FinanceFlow</span>
+              <span className="text-xl font-bold text-white group-hover:text-gray-200 transition-colors">FinanceFlow</span>
             </Link>
           </div>
         </div>
@@ -30,18 +30,18 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({ children, title, subtitle }) =>
         <div className="max-w-md w-full">
           {/* Header */}
           <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">{title}</h1>
-            <p className="text-gray-600">{subtitle}</p>
+            <h1 className="text-3xl font-bold text-white mb-3">{title}</h1>
+            <p className="text-gray-300 text-lg">{subtitle}</p>
           </div>
 
           {/* Auth Form Container */}
-          <div className="bg-white py-8 px-6 shadow-sm rounded-lg border">
+          <div className="bg-white/95 backdrop-blur-sm py-8 px-8 shadow-2xl rounded-2xl border border-white/20">
             {children}
           </div>
 
           {/* Footer */}
           <div className="text-center mt-8">
-            <p className="text-gray-500 text-sm">
+            <p className="text-gray-400 text-sm">
               © 2024 FinanceFlow. All rights reserved.
             </p>
           </div>

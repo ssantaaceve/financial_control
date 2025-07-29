@@ -147,4 +147,29 @@ export interface AuthContextType {
   logout: () => void;
   isAuthenticated: boolean;
   loading: boolean;
+}
+
+// Tipos de categoría
+export interface Category {
+  id: string;
+  name: string;
+  type: MovementType;
+  icon?: string;
+  color?: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface CategoryCreate {
+  name: string;
+  type: MovementType;
+  icon?: string;
+  color?: string;
+}
+
+export interface CategoryUpdate {
+  name?: string;
+  type?: MovementType;
+  icon?: string;
+  color?: string;
 } 

@@ -9,9 +9,11 @@ from app.services.supabase_service import supabase_service
 from app.services.auth_service import auth_service
 from app.services.movement_service import movement_service
 from app.services.budget_service import budget_service
+from app.services.category_service import category_service
 from app.models.user import UserCreate, UserResponse, UserLogin, Token
 from app.models.movement import MovementCreate, MovementUpdate, MovementFilter
 from app.models.budget import BudgetCreate, BudgetUpdate
+from app.models.category import MovementType as CategoryMovementType
 
 # Configurar logging
 logging.basicConfig(level=logging.INFO)
@@ -78,10 +80,22 @@ async def register(user_data: UserCreate):
         result = await auth_service.register_user(user_data)
         
         if result["success"]:
+            # Crear token para el usuario registrado
+            from datetime import timedelta
+            access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+            access_token = auth_service.create_access_token(
+                data={"sub": result["user"].id}, 
+                expires_delta=access_token_expires
+            )
+            
             return {
                 "success": True,
                 "message": "Usuario registrado exitosamente",
-                "user": result["user"]
+                "user": result["user"],
+                "token": {
+                    "access_token": access_token,
+                    "token_type": "bearer"
+                }
             }
         else:
             raise HTTPException(
@@ -503,7 +517,76 @@ async def get_budget_summary(current_user: UserResponse = Depends(get_current_us
             )
             
     except Exception as e:
-        logger.error(f"Error al obtener resumen de presupuestos: {e}")
+        logger.error(f"Error getting budget summary: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error interno del servidor"
+        )
+
+# Rutas de categorías
+@app.get(f"{settings.API_V1_STR}/categories", response_model=dict)
+async def get_categories(
+    type: CategoryMovementType = None,
+    current_user: UserResponse = Depends(get_current_user)
+):
+    """Obtener categorías, opcionalmente filtradas por tipo."""
+    try:
+        categories = await category_service.get_categories(type)
+        
+        return {
+            "success": True,
+            "data": [category.dict() for category in categories]
+        }
+            
+    except Exception as e:
+        logger.error(f"Error getting categories: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error interno del servidor"
+        )
+
+@app.post(f"{settings.API_V1_STR}/categories", response_model=dict)
+async def create_category(
+    category_data: dict,
+    current_user: UserResponse = Depends(get_current_user)
+):
+    """Crear una nueva categoría."""
+    try:
+        from app.models.category import CategoryCreate, MovementType
+        
+        # Validar que el tipo sea válido
+        if category_data.get("type") not in ["INGRESO", "GASTO"]:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Tipo debe ser 'INGRESO' o 'GASTO'"
+            )
+        
+        # Crear objeto CategoryCreate
+        category_create = CategoryCreate(
+            name=category_data["name"],
+            type=MovementType.INGRESO if category_data["type"] == "INGRESO" else MovementType.GASTO,
+            icon=category_data.get("icon"),
+            color=category_data.get("color", "#6B7280")
+        )
+        
+        result = await category_service.create_category(category_create)
+        
+        if result["success"]:
+            return {
+                "success": True,
+                "message": "Categoría creada exitosamente",
+                "data": result["data"]
+            }
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=result["error"]
+            )
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error creating category: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error interno del servidor"
