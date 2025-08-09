@@ -41,6 +41,8 @@ class Settings:
         "https://financial-control-77zs24opw.vercel.app",  # Deploy actual
         "https://financial-control-develop.vercel.app",    # Desarrollo
         "https://financial-cont-git-b72eef-sergio-andres-s.vercel.app",  # Preview desarrollo
+        "https://financial-control-git-develop-ssantaaceve.vercel.app",  # Preview desarrollo alternativo
+        "https://financial-control-nhrcs5nf3.vercel.app",  # Preview desarrollo específico
     ]
     
     # API
