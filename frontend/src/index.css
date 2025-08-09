@@ -5,11 +5,14 @@
 @tailwind utilities;
 
 :root {
-  /* Variables CSS para temas */
-  --main-bg: #000058;
+  /* Variables CSS para el nuevo tema con gradiente */
+  --main-bg: linear-gradient(90deg, #2A7B9B 0%, #57C785 100%);
   --text-color: #ffffff;
-  --card-bg: rgba(255, 255, 255, 0.1);
+  --card-bg: rgba(255, 255, 255, 0.15);
   --border-color: rgba(255, 255, 255, 0.2);
+  --sidebar-bg: rgba(42, 123, 155, 0.9);
+  --accent-color: #57C785;
+  --accent-hover: #4CAF50;
 }
 
 * {
@@ -20,31 +23,11 @@
 
 body {
   font-family: 'Roboto Mono', monospace;
-  background-color: var(--main-bg);
+  background: var(--main-bg);
   color: var(--text-color);
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition: all 0.3s ease;
   min-height: 100vh;
-}
-
-/* Estilos para modo claro */
-.light {
-  --main-bg: #f8fafc;
-  --text-color: #1e293b;
-  --card-bg: #ffffff;
-  --border-color: #e2e8f0;
-}
-
-/* Estilos para modo oscuro */
-.dark {
-  --main-bg: #000058;
-  --text-color: #ffffff;
-  --card-bg: rgba(255, 255, 255, 0.1);
-  --border-color: rgba(255, 255, 255, 0.2);
-}
-
-/* Transiciones suaves para cambios de tema */
-* {
-  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  background-attachment: fixed;
 }
 
 /* Contenedor principal */
@@ -52,7 +35,8 @@ body {
   padding: 1rem;
   margin-left: 4rem; /* Espacio para la sidebar */
   min-height: 100vh;
-  background-color: var(--main-bg);
+  background: var(--main-bg);
+  background-attachment: fixed;
 }
 
 /* Estilos para tarjetas y contenedores */
@@ -61,6 +45,7 @@ body {
   border: 1px solid var(--border-color);
   border-radius: 0.75rem;
   backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
 /* Estilos para inputs */
@@ -68,26 +53,28 @@ input, textarea, select {
   background-color: var(--card-bg);
   border: 1px solid var(--border-color);
   color: var(--text-color);
+  backdrop-filter: blur(10px);
 }
 
 input::placeholder, textarea::placeholder {
-  color: rgba(var(--text-color), 0.6);
+  color: rgba(255, 255, 255, 0.6);
 }
 
 /* Estilos para botones */
 .btn-primary {
-  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  background: linear-gradient(135deg, var(--accent-color), var(--accent-hover));
   color: white;
   border: none;
   border-radius: 0.75rem;
   padding: 0.75rem 1.5rem;
   font-weight: 600;
   transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(87, 199, 133, 0.3);
 }
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 10px 25px rgba(87, 199, 133, 0.4);
 }
 
 .btn-secondary {
@@ -98,11 +85,35 @@ input::placeholder, textarea::placeholder {
   padding: 0.75rem 1.5rem;
   font-weight: 600;
   transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
 }
 
 .btn-secondary:hover {
-  background-color: rgba(var(--text-color), 0.1);
+  background-color: rgba(255, 255, 255, 0.2);
   transform: translateY(-1px);
+}
+
+/* Estilos para el gradiente de fondo */
+.App {
+  background: var(--main-bg);
+  min-height: 100vh;
+  background-attachment: fixed;
+}
+
+/* Estilos para componentes con glassmorphism */
+.glass {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilos para textos */
+.text-gradient {
+  background: linear-gradient(135deg, #2A7B9B, #57C785);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 /* Scrollbar personalizada */
