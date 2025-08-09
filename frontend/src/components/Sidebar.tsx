@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { useTheme } from '../contexts/ThemeContext';
 import { 
   HomeIcon, 
   PlusIcon, 
@@ -14,7 +13,6 @@ import {
 
 const Sidebar: React.FC = () => {
   const { user, logout, isAuthenticated } = useAuth();
-  const { isDark } = useTheme();
   const location = useLocation();
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
 
