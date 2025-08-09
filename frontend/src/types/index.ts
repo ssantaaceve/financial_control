@@ -66,13 +66,79 @@ export interface MovementFilter {
   amount_max?: number;
 }
 
-// Tipos de presupuesto
+// Tipos de presupuesto - Nuevo enfoque estratégico
 export enum BudgetPeriod {
   SEMANAL = 'semanal',
   MENSUAL = 'mensual',
   ANUAL = 'anual'
 }
 
+export enum BudgetItemType {
+  INGRESO_RECURRENTE = 'ingreso_recurrente',
+  GASTO_PROYECTADO = 'gasto_proyectado'
+}
+
+export interface BudgetItem {
+  id: string;
+  user_id: string;
+  name: string;
+  amount: number;
+  type: BudgetItemType;
+  category: string;
+  frequency: BudgetPeriod;
+  start_date: string;
+  end_date?: string;
+  is_active: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface BudgetItemCreate {
+  name: string;
+  amount: number;
+  type: BudgetItemType;
+  category: string;
+  frequency: BudgetPeriod;
+  start_date: string;
+  end_date?: string;
+}
+
+export interface BudgetItemUpdate {
+  name?: string;
+  amount?: number;
+  type?: BudgetItemType;
+  category?: string;
+  frequency?: BudgetPeriod;
+  start_date?: string;
+  end_date?: string;
+  is_active?: boolean;
+}
+
+export interface BudgetProjection {
+  month: string;
+  projected_income: number;
+  projected_expenses: number;
+  projected_balance: number;
+  actual_income: number;
+  actual_expenses: number;
+  actual_balance: number;
+  variance_income: number;
+  variance_expenses: number;
+  variance_balance: number;
+}
+
+export interface BudgetSummary {
+  total_projected_income: number;
+  total_projected_expenses: number;
+  total_projected_balance: number;
+  total_actual_income: number;
+  total_actual_expenses: number;
+  total_actual_balance: number;
+  projections: BudgetProjection[];
+  period_months: number;
+}
+
+// Mantener compatibilidad con el sistema anterior
 export interface Budget {
   id: string;
   user_id: string;
@@ -102,22 +168,6 @@ export interface BudgetUpdate {
   period?: BudgetPeriod;
   start_date?: string;
   end_date?: string;
-}
-
-// Tipos de reportes
-export interface FinancialSummary {
-  total_income: number;
-  total_expenses: number;
-  balance: number;
-  movement_count: number;
-}
-
-export interface BudgetSummary {
-  total_budgets: number;
-  total_allocated: number;
-  total_spent: number;
-  total_remaining: number;
-  budgets: Budget[];
 }
 
 // Tipos de respuesta de la API
