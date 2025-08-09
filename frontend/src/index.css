@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Funnel+Display:wght@300..800&family=Outfit:wght@100..900&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -13,6 +13,10 @@
   --sidebar-bg: rgba(42, 123, 155, 0.9);
   --accent-color: #57C785;
   --accent-hover: #4CAF50;
+  
+  /* Variables para fuentes */
+  --font-display: 'Funnel Display', serif;
+  --font-body: 'Outfit', sans-serif;
 }
 
 * {
@@ -22,12 +26,71 @@
 }
 
 body {
-  font-family: 'Roboto Mono', monospace;
+  font-family: var(--font-body);
   background: var(--main-bg);
   color: var(--text-color);
   transition: all 0.3s ease;
   min-height: 100vh;
   background-attachment: fixed;
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+/* Estilos para títulos con Funnel Display */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+
+h2 {
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+h4 {
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
+h5 {
+  font-size: 1.125rem;
+  font-weight: 500;
+}
+
+h6 {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+/* Estilos para textos con Outfit */
+p, span, div, button, input, textarea, select, label {
+  font-family: var(--font-body);
+}
+
+/* Estilos para elementos específicos */
+.font-display {
+  font-family: var(--font-display);
+}
+
+.font-body {
+  font-family: var(--font-body);
+}
+
+/* Estilos para botones con fuentes actualizadas */
+.btn-primary, .btn-secondary {
+  font-family: var(--font-body);
+  font-weight: 500;
 }
 
 /* Contenedor principal */

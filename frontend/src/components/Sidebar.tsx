@@ -72,7 +72,7 @@ const Sidebar: React.FC = () => {
       {/* Logo */}
       <div className="flex items-center justify-center h-16 border-b border-white/20">
         <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-white/20 backdrop-blur-sm">
-          <span className="text-white font-bold text-xs">FL</span>
+          <span className="text-white font-bold text-xs" style={{ fontFamily: 'var(--font-display)' }}>FL</span>
         </div>
       </div>
 
@@ -103,8 +103,8 @@ const Sidebar: React.FC = () => {
               {/* Tooltip */}
               {hoveredItem === item.name && (
                 <div className="absolute left-14 top-1/2 transform -translate-y-1/2 bg-white/90 backdrop-blur-sm border border-white/20 text-gray-800 text-sm px-3 py-2 rounded-lg shadow-lg whitespace-nowrap z-50">
-                  <div className="font-medium">{item.name}</div>
-                  <div className="opacity-70 text-xs">{item.description}</div>
+                  <div className="font-medium" style={{ fontFamily: 'var(--font-display)' }}>{item.name}</div>
+                  <div className="opacity-70 text-xs" style={{ fontFamily: 'var(--font-body)' }}>{item.description}</div>
                   {/* Arrow */}
                   <div className="absolute right-full top-1/2 transform -translate-y-1/2 border-4 border-transparent border-r-white/90"></div>
                 </div>
@@ -129,8 +129,8 @@ const Sidebar: React.FC = () => {
             
             {hoveredItem === 'user' && (
               <div className="absolute left-14 bottom-0 transform -translate-y-1/2 bg-white/90 backdrop-blur-sm border border-white/20 text-gray-800 text-sm px-3 py-2 rounded-lg shadow-lg whitespace-nowrap z-50">
-                <div className="font-medium">{user?.name}</div>
-                <div className="opacity-70 text-xs">Usuario actual</div>
+                <div className="font-medium" style={{ fontFamily: 'var(--font-display)' }}>{user?.name}</div>
+                <div className="opacity-70 text-xs" style={{ fontFamily: 'var(--font-body)' }}>Usuario actual</div>
                 <div className="absolute right-full bottom-1/2 transform translate-y-1/2 border-4 border-transparent border-r-white/90"></div>
               </div>
             )}
@@ -166,8 +166,8 @@ const Sidebar: React.FC = () => {
                 {/* Tooltip */}
                 {hoveredItem === item.name && (
                   <div className="absolute left-14 top-1/2 transform -translate-y-1/2 bg-white/90 backdrop-blur-sm border border-white/20 text-gray-800 text-sm px-3 py-2 rounded-lg shadow-lg whitespace-nowrap z-50">
-                    <div className="font-medium">{item.name}</div>
-                    <div className="opacity-70 text-xs">{item.description}</div>
+                    <div className="font-medium" style={{ fontFamily: 'var(--font-display)' }}>{item.name}</div>
+                    <div className="opacity-70 text-xs" style={{ fontFamily: 'var(--font-body)' }}>{item.description}</div>
                     <div className="absolute right-full top-1/2 transform -translate-y-1/2 border-4 border-transparent border-r-white/90"></div>
                   </div>
                 )}
