@@ -8,9 +8,17 @@ import {
   ChartBarIcon,
   CalendarIcon
 } from '@heroicons/react/24/outline';
-import { Movement, FinancialSummary, MovementType } from '../types';
+import { Movement, MovementType } from '../types';
 import { apiService } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
+
+// Interfaz local para el resumen financiero
+interface FinancialSummary {
+  total_income: number;
+  total_expenses: number;
+  balance: number;
+  movement_count: number;
+}
 
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
@@ -199,7 +207,7 @@ const Dashboard: React.FC = () => {
             <h2 className="text-lg font-medium text-white mb-4" style={{ fontFamily: 'var(--font-display)' }}>
               Acciones Rápidas
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <button
                 onClick={() => navigate('/movements')}
                 className="flex items-center p-4 border border-white/20 rounded-lg hover:bg-white/20 transition-colors text-left"
@@ -219,17 +227,6 @@ const Dashboard: React.FC = () => {
                 <div>
                   <p className="font-medium text-white">Gestionar Presupuestos</p>
                   <p className="text-sm text-white/70">Configurar límites de gasto</p>
-                </div>
-              </Link>
-
-              <Link
-                to="/reports"
-                className="flex items-center p-4 border border-white/20 rounded-lg hover:bg-white/20 transition-colors text-left"
-              >
-                <ChartBarIcon className="h-6 w-6 text-purple-400 mr-3" />
-                <div>
-                  <p className="font-medium text-white">Ver Reportes</p>
-                  <p className="text-sm text-white/70">Análisis detallado</p>
                 </div>
               </Link>
             </div>

@@ -104,22 +104,6 @@ export interface BudgetUpdate {
   end_date?: string;
 }
 
-// Tipos de reportes
-export interface FinancialSummary {
-  total_income: number;
-  total_expenses: number;
-  balance: number;
-  movement_count: number;
-}
-
-export interface BudgetSummary {
-  total_budgets: number;
-  total_allocated: number;
-  total_spent: number;
-  total_remaining: number;
-  budgets: Budget[];
-}
-
 // Tipos de respuesta de la API
 export interface ApiResponse<T> {
   success: boolean;

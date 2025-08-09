@@ -7,7 +7,6 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Movements from './pages/Movements';
 import Budgets from './pages/Budgets';
-import Reports from './pages/Reports';
 import Profile from './pages/Profile';
 import PrivateRoute from './components/PrivateRoute';
 
@@ -50,17 +49,6 @@ const App: React.FC = () => {
                   <Sidebar />
                   <main className="main-content">
                     <Budgets />
-                  </main>
-                </div>
-              </PrivateRoute>
-            } />
-            
-            <Route path="/reports" element={
-              <PrivateRoute>
-                <div className="flex">
-                  <Sidebar />
-                  <main className="main-content">
-                    <Reports />
                   </main>
                 </div>
               </PrivateRoute>

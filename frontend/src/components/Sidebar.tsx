@@ -42,12 +42,6 @@ const Sidebar: React.FC = () => {
       icon: ChartBarIcon,
       path: '/budgets',
       description: 'Controlar presupuestos'
-    },
-    {
-      name: 'Reportes',
-      icon: DocumentTextIcon,
-      path: '/reports',
-      description: 'Ver reportes financieros'
     }
   ];
 

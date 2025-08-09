@@ -11,13 +11,27 @@ import {
   Budget,
   BudgetCreate,
   BudgetUpdate,
-  FinancialSummary,
-  BudgetSummary,
   ApiResponse,
   AuthResponse,
   Category,
   MovementType
 } from '../types';
+
+// Interfaces locales para reportes
+interface FinancialSummary {
+  total_income: number;
+  total_expenses: number;
+  balance: number;
+  movement_count: number;
+}
+
+interface BudgetSummary {
+  total_budgets: number;
+  total_allocated: number;
+  total_spent: number;
+  total_remaining: number;
+  budgets: Budget[];
+}
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8001';
 
@@ -128,43 +142,33 @@ class ApiService {
   }
 
   // Métodos de presupuestos
-  async createBudget(budgetData: BudgetCreate): Promise<ApiResponse<Budget>> {
-    const response: AxiosResponse<ApiResponse<Budget>> = await this.api.post('/budgets', budgetData);
-    return response.data;
-  }
-
   async getBudgets(): Promise<ApiResponse<Budget[]>> {
     const response: AxiosResponse<ApiResponse<Budget[]>> = await this.api.get('/budgets');
     return response.data;
   }
 
-  async getBudgetById(id: string): Promise<ApiResponse<Budget>> {
-    const response: AxiosResponse<ApiResponse<Budget>> = await this.api.get(`/budgets/${id}`);
+  async createBudget(budget: BudgetCreate): Promise<ApiResponse<Budget>> {
+    const response: AxiosResponse<ApiResponse<Budget>> = await this.api.post('/budgets', budget);
     return response.data;
   }
 
-  async updateBudget(id: string, updateData: BudgetUpdate): Promise<ApiResponse<Budget>> {
-    const response: AxiosResponse<ApiResponse<Budget>> = await this.api.put(`/budgets/${id}`, updateData);
+  async updateBudget(id: number, budget: BudgetUpdate): Promise<ApiResponse<Budget>> {
+    const response: AxiosResponse<ApiResponse<Budget>> = await this.api.put(`/budgets/${id}`, budget);
     return response.data;
   }
 
-  async deleteBudget(id: string): Promise<ApiResponse<void>> {
-    const response: AxiosResponse<ApiResponse<void>> = await this.api.delete(`/budgets/${id}`);
+  async deleteBudget(id: number): Promise<ApiResponse<null>> {
+    const response: AxiosResponse<ApiResponse<null>> = await this.api.delete(`/budgets/${id}`);
     return response.data;
   }
 
-  // Métodos de reportes
+  // Método para obtener resumen financiero
   async getFinancialSummary(startDate?: string, endDate?: string): Promise<ApiResponse<FinancialSummary>> {
     const params = new URLSearchParams();
     if (startDate) params.append('start_date', startDate);
     if (endDate) params.append('end_date', endDate);
 
     const response: AxiosResponse<ApiResponse<FinancialSummary>> = await this.api.get(`/reports/financial-summary?${params.toString()}`);
-    return response.data;
-  }
-
-  async getBudgetSummary(): Promise<ApiResponse<BudgetSummary>> {
-    const response: AxiosResponse<ApiResponse<BudgetSummary>> = await this.api.get('/reports/budget-summary');
     return response.data;
   }
 
