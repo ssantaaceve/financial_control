@@ -152,12 +152,12 @@ class ApiService {
     return response.data;
   }
 
-  async updateBudget(id: number, budget: BudgetUpdate): Promise<ApiResponse<Budget>> {
+  async updateBudget(id: string, budget: BudgetUpdate): Promise<ApiResponse<Budget>> {
     const response: AxiosResponse<ApiResponse<Budget>> = await this.api.put(`/budgets/${id}`, budget);
     return response.data;
   }
 
-  async deleteBudget(id: number): Promise<ApiResponse<null>> {
+  async deleteBudget(id: string): Promise<ApiResponse<null>> {
     const response: AxiosResponse<ApiResponse<null>> = await this.api.delete(`/budgets/${id}`);
     return response.data;
   }
