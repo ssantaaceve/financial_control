@@ -14,7 +14,11 @@ import {
   ApiResponse,
   AuthResponse,
   Category,
-  MovementType
+  MovementType,
+  BudgetItem,
+  BudgetItemCreate,
+  BudgetItemUpdate,
+  BudgetSummary
 } from '../types';
 
 // Interfaces locales para reportes
@@ -23,14 +27,6 @@ interface FinancialSummary {
   total_expenses: number;
   balance: number;
   movement_count: number;
-}
-
-interface BudgetSummary {
-  total_budgets: number;
-  total_allocated: number;
-  total_spent: number;
-  total_remaining: number;
-  budgets: Budget[];
 }
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8001';
@@ -159,6 +155,32 @@ class ApiService {
 
   async deleteBudget(id: string): Promise<ApiResponse<null>> {
     const response: AxiosResponse<ApiResponse<null>> = await this.api.delete(`/budgets/${id}`);
+    return response.data;
+  }
+
+  // Nuevos métodos para presupuesto estratégico
+  async getBudgetItems(): Promise<ApiResponse<BudgetItem[]>> {
+    const response: AxiosResponse<ApiResponse<BudgetItem[]>> = await this.api.get('/budget-items');
+    return response.data;
+  }
+
+  async createBudgetItem(item: BudgetItemCreate): Promise<ApiResponse<BudgetItem>> {
+    const response: AxiosResponse<ApiResponse<BudgetItem>> = await this.api.post('/budget-items', item);
+    return response.data;
+  }
+
+  async updateBudgetItem(id: string, item: BudgetItemUpdate): Promise<ApiResponse<BudgetItem>> {
+    const response: AxiosResponse<ApiResponse<BudgetItem>> = await this.api.put(`/budget-items/${id}`, item);
+    return response.data;
+  }
+
+  async deleteBudgetItem(id: string): Promise<ApiResponse<null>> {
+    const response: AxiosResponse<ApiResponse<null>> = await this.api.delete(`/budget-items/${id}`);
+    return response.data;
+  }
+
+  async getBudgetProjections(months: number = 12): Promise<ApiResponse<BudgetSummary>> {
+    const response: AxiosResponse<ApiResponse<BudgetSummary>> = await this.api.get(`/budget-projections?months=${months}`);
     return response.data;
   }
 
