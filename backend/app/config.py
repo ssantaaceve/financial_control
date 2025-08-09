@@ -18,7 +18,7 @@ class Settings:
     
     # Server
     HOST: str = os.getenv("HOST", "0.0.0.0")
-    PORT: int = int(os.getenv("PORT", "8000"))
+    PORT: int = int(os.getenv("PORT", "10000"))  # Changed from 8000 to 10000 for Render
     DEBUG: bool = os.getenv("DEBUG", "True").lower() == "true"
     
     # CORS
@@ -39,6 +39,8 @@ class Settings:
         "http://127.0.0.1:8501",
         "https://financial-control-ruddy.vercel.app",      # Producción
         "https://financial-control-77zs24opw.vercel.app",  # Deploy actual
+        "https://financial-control-develop.vercel.app",    # Desarrollo
+        "https://financial-control-git-develop-ssantaaceve.vercel.app",  # Preview
     ]
     
     # API
